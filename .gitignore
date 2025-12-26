@@ -4,6 +4,10 @@ wp-content/*
 !wp-content/plugins/
 !wp-content/themes/
 !wp-content/index.php
+!wp-content/uploads/
+
+# Ignore everything in uploads EXCEPT gravity-forms-pdfs
+wp-content/uploads/*
 !wp-content/uploads/gravity-forms-pdfs/
 
 # Ignore specific plugins
