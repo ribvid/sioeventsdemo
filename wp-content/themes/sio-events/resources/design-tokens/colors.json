@@ -1,0 +1,82 @@
+{
+  "title": "Colors",
+  "description": "Hex color codes that can be shared, cross-platform. They can be converted at point of usage, such as HSL for web or CMYK for print.",
+  "items": [
+    {
+      "name": "White",
+      "value": "#fff"
+    },
+    {
+      "name": "Black",
+      "value": "#000"
+    },
+    {
+      "name": "Green 100",
+      "value": "#00FF00"
+    },
+    {
+      "name": "Green 200",
+      "value": "#005700"
+    },
+    {
+      "name": "Green 300",
+      "value": "#4AE516"
+    },
+    {
+      "name": "Blue 100",
+      "value": "#0000A3"
+    },
+    {
+      "name": "Blue 200",
+      "value": "#0000FF"
+    },
+    {
+      "name": "Blue 300",
+      "value": "#00AEEF"
+    },
+    {
+      "name": "Blue 400",
+      "value": "#0BF0F4"
+    },
+    {
+      "name": "Yellow 100",
+      "value": "#CDFF00"
+    },
+    {
+      "name": "Yellow 200",
+      "value": "#FFDD00"
+    },
+    {
+      "name": "Yellow 300",
+      "value": "#EBD003"
+    },
+    {
+      "name": "Red",
+      "value": "#FF0000"
+    },
+    {
+      "name": "Magenta",
+      "value": "#FF00FF"
+    },
+    {
+      "name": "Gray 100",
+      "value": "#A1A1A2"
+    },
+    {
+      "name": "Gray 200",
+      "value": "#D9D9D9"
+    },
+    {
+      "name": "Gray 300",
+      "value": "#999"
+    },
+    {
+      "name": "Gray 400",
+      "value": "#444"
+    },
+    {
+      "name": "Cyan",
+      "value": "#00FFFF"
+    }
+  ]
+}

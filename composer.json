@@ -1,0 +1,30 @@
+{
+    "name": "vidribic/sioevents",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Vid R",
+            "email": "ribvid@gmail.com"
+        }
+    ],
+    "require": {
+        "composer/installers": "^2.3",
+        "roots/allow-svg": "^1.0",
+        "wpengine/advanced-custom-fields-pro": "^6.7"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    },
+    "extra": {
+        "installer-paths": {
+            "wp-content/mu-plugins/{$name}": ["type:wordpress-muplugin", "roots/allow-svg"]
+        }
+    },
+    "repositories": [{
+        "name": "acf",
+        "type": "composer",
+        "url": "https://connect.advancedcustomfields.com"
+    }]
+}

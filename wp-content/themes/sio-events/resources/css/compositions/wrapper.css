@@ -1,0 +1,9 @@
+.wrapper {
+    margin-inline: auto;
+    max-width: min(100%, var(--wrapper-max-width));
+    padding-inline: var(--wrapper-x-padding);
+}
+
+.wrapper.prose {
+    max-width: min(100%, var(--prose-max-width));
+}

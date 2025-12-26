@@ -1,0 +1,18 @@
+@import 'tailwindcss/base';
+
+@import 'global/reset.css';
+@import 'global/fonts.css';
+
+@import 'tailwindcss/components';
+
+@import 'global/variables.css';
+@import 'global/global-styles.css';
+
+@import 'tailwindcss/utilities';
+
+/*
+ * Compositions, utilities, and blocks are imported via import.meta.glob in app.js
+ * because Vite doesn't support postcss-import-ext-glob. This is due to Vite not allowing
+ * plugins to be injected before defaults like postcss-import. See:
+ * https://github.com/vitejs/vite/issues/12336 and https://github.com/vitejs/vite/discussions/6688
+ */

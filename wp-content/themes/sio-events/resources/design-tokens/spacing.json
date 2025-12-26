@@ -1,0 +1,141 @@
+{
+  "title": "Spacing",
+  "description": "Consistent spacing sizes, based on a ratio, with min and max sizes. This allows you to set spacing based on the context size. For example, min for mobile and max for desktop browsers.",
+  "items": [
+    {
+      "name": "3XS",
+      "min": 3,
+      "max": 4
+    },
+    {
+      "name": "2XS",
+      "min": 7,
+      "max": 8
+    },
+    {
+      "name": "XS",
+      "min": 11,
+      "max": 12
+    },
+    {
+      "name": "S",
+      "min": 14,
+      "max": 16
+    },
+    {
+      "name": "M",
+      "min": 21,
+      "max": 24
+    },
+    {
+      "name": "L",
+      "min": 28,
+      "max": 32
+    },
+    {
+      "name": "XL",
+      "min": 42,
+      "max": 48
+    },
+    {
+      "name": "2XL",
+      "min": 56,
+      "max": 64
+    },
+    {
+      "name": "3XL",
+      "min": 70,
+      "max": 80
+    },
+    {
+      "name": "4XL",
+      "min": 98,
+      "max": 112
+    },
+    {
+      "name": "5XL",
+      "min": 126,
+      "max": 144
+    },
+    {
+      "name": "XS - S",
+      "min": 11,
+      "max": 16
+    },
+    {
+      "name": "XS - L",
+      "min": 11,
+      "max": 32
+    },
+    {
+      "name": "S - M",
+      "min": 14,
+      "max": 24
+    },
+    {
+      "name": "S - L",
+      "min": 14,
+      "max": 32
+    },
+    {
+      "name": "S - XL",
+      "min": 14,
+      "max": 48
+    },
+    {
+      "name": "S - XL",
+      "min": 14,
+      "max": 48
+    },
+    {
+      "name": "S - 4XL",
+      "min": 14,
+      "max": 112
+    },
+    {
+      "name": "M - L",
+      "min": 21,
+      "max": 32
+    },
+    {
+      "name": "M - XL",
+      "min": 21,
+      "max": 48
+    },
+    {
+      "name": "M - 5XL",
+      "min": 21,
+      "max": 144
+    },
+    {
+      "name": "L - XL",
+      "min": 28,
+      "max": 48
+    },
+    {
+      "name": "L - 2XL",
+      "min": 28,
+      "max": 64
+    },
+    {
+      "name": "L - 3XL",
+      "min": 28,
+      "max": 80
+    },
+    {
+      "name": "XL - 3XL",
+      "min": 42,
+      "max": 80
+    },
+    {
+      "name": "XL - 4XL",
+      "min": 42,
+      "max": 112
+    },
+    {
+      "name": "3XL - 4XL",
+      "min": 70,
+      "max": 112
+    }
+  ]
+}

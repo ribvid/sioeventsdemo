@@ -1,0 +1,87 @@
+.button {
+
+    /* Configuration */
+    --button-x-padding: 1.6em;
+    --button-y-padding: 0.5em;
+    --button-gutter: 0.8ch;
+    --button-bg: transparent;
+    --button-color: var(--color-black);
+    --button-border-width: 1px;
+    --button-border-style: solid;
+    --button-border-color: var(--color-black);
+    --button-hover-bg: var(--default-gradient);
+    --button-hover-color: var(--color-black);
+    --button-hover-border-color: var(--color-black);
+    --button-radius: var(--radius-l);
+    --button-text-transform: uppercase;
+    --button-letter-spacing: var(--tracking-normal);
+
+    /* Layout and spacing */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--button-gutter);
+    padding: var(--button-y-padding) var(--button-x-padding);
+
+    /* Colors */
+    background: var(--button-bg);
+    color: var(--button-color);
+
+    /* Stroke and radius */
+    border-width: var(--button-border-width);
+    border-style: var(--button-border-style);
+    border-color: var(--button-border-color);
+    border-radius: var(--button-radius);
+
+    /* Typography */
+    text-decoration: none;
+    font-weight: var(--button-font-weight);
+    font-size: var(--button-font-size, var(--size-step-0));
+    letter-spacing: var(--button-letter-spacing);
+    font-family: var(--button-font-family);
+    line-height: var(--button-line-height, 1.1); /* If you don’t set this, <a> buttons and <button> buttons will be different heights because they usually have different line heights from user agent styles. I chose 1.1 because text won’t overlap with our chosen font if it wraps on to multiple lines. */
+    text-transform: var(--button-text-transform);
+
+    /* Interactive */
+    cursor: pointer;
+}
+
+.button svg {
+    height: var(--button-icon-size, 2.25ex);
+    height: var(--button-icon-size, 1lh);
+    width: auto;
+    flex: none;
+}
+
+.button:hover {
+    background: var(--button-hover-bg);
+    color: var(--button-hover-color);
+    border-color: var(--button-hover-border-color);
+    font-weight: var(--button-hover-font-weight, var(--button-font-weight));
+    transform: scale(var(--button-hover-scale));
+}
+
+.button:disabled {
+    background: var(--button-disabled-bg);
+    color: var(--button-disabled-color);
+    border-color: var(--button-disabled-border-color);
+    font-weight: var(--button-disabled-font-weight, var(--button-font-weight));
+    cursor: not-allowed;
+}
+
+.button:focus {
+    outline-width: var(--button-outline-width, var(--button-border-width));
+    outline-style: var(--button-outline-style, var(--button-border-style));
+    outline-color: var(--button-outline-color, var(--button-border-color));
+    outline-offset: var(
+            --button-outline-offset,
+            calc(var(--button-border-width) * 2)
+    );
+}
+
+.button:active {
+    transform: scale(var(--button-active-scale, 98%));
+}
+
+.button[hidden] {
+    display: none;
+}

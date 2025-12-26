@@ -1,0 +1,38 @@
+# Ignore everything in the "wp-content" directory, except: "mu-plugins", "plugins" and "themes" directories
+wp-content/*
+!wp-content/mu-plugins/
+!wp-content/plugins/
+!wp-content/themes/
+!wp-content/index.php
+
+# Ignore specific plugins
+wp-content/plugins/query-monitor/
+
+# Ignore configuration files
+wp-config.php
+.htaccess
+.env
+auth.json
+
+# Ignore dependencies
+/node_modules
+/vendor
+*.lock
+
+# Ignore build outputs
+/public/
+/dist/
+
+# Ignore log files
+*.log
+
+# Ignore databases
+*.sql
+*.sql.gz
+
+# Ignore IDE & OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

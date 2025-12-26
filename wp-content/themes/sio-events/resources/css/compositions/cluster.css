@@ -1,0 +1,16 @@
+/*
+CLUSTER
+More info: https://every-layout.dev/layouts/cluster/
+A layout that lets you distribute items with consitent
+spacing, regardless of their size
+*/
+
+.cluster {
+    display: flex;
+    flex-wrap: var(--cluster-wrap, wrap);
+    row-gap: var(--cluster-row-gap, var(--gutter, var(--space-s)));
+    column-gap: var(--cluster-column-gap, var(--gutter, var(--space-s)));
+    justify-content: var(--cluster-horizontal-alignment, flex-start);
+    align-items: var(--cluster-vertical-alignment, center);
+    flex-direction: var(--cluster-direction, row);
+}

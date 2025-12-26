@@ -1,0 +1,79 @@
+{
+    "key": "group_694db9cd30e62",
+    "title": "Vzorec",
+    "fields": [
+        {
+            "key": "field_694db9cd7b57a",
+            "label": "Naloži vzorčno datoteko",
+            "name": "template",
+            "aria-label": "",
+            "type": "file",
+            "instructions": "Vzorčna datoteka naj bo v formatu docx",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_size": "",
+            "max_size": "",
+            "mime_types": "docx",
+            "allow_in_bindings": 0
+        },
+        {
+            "key": "field_694dba147b57b",
+            "label": "Placeholderji",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Vzorčna datoteka lahko vsebuje placeholderje, kot so:\r\n\r\n${ime_dogodka}\r\n${datum_prijave}\r\n${ime_udeleženca}\r\n${priimek_udeleženca}\r\n${email_udelezenca}\r\n${qr_koda}\r\n\r\nVsaka izvedba ima lahko tudi dodatne placeholderje, ki jih lahko uporabite v vzorčni datoteki.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "ticket"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "attendance_sheet"
+            }
+        ],
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "certificate"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "seamless",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1766707504
+}

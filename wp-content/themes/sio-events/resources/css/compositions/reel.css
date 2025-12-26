@@ -1,0 +1,40 @@
+.reel {
+    display: flex;
+    height: auto;
+    margin-inline: var(--reel-margin-inline, auto);
+    align-items: var(--reel-vertical-alignment, stretch);
+    max-width: 100%;
+    overflow-x: auto;
+    padding-block-end: var(--scroll-bar-offset);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-color: var(--scroll-bar-track-color) var(--scroll-bar-thumb-color);
+}
+
+.reel > * {
+    flex-basis: var(--reel-item-width, fit-content);
+    flex-shrink: 0
+}
+
+.reel > * + * {
+    margin-inline-start: var(--reel-space, var(--gutter, 1rem));
+}
+
+.reel::-webkit-scrollbar {
+    block-size: var(--scroll-bar-size);
+}
+
+.reel::-webkit-scrollbar-track {
+    background-color: var(--scroll-bar-track-color);
+}
+
+.reel::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-bar-thumb-color);
+}
+
+.reel[data-scroll=snap] {
+    scroll-snap-type: x mandatory;
+}
+
+.reel[data-scroll=snap] > * {
+    scroll-snap-align: start;
+}

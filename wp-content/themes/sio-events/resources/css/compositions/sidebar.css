@@ -1,0 +1,37 @@
+/*
+SIDEBAR
+More info: https://every-layout.dev/layouts/sidebar/
+*/
+
+.sidebar {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: var(--sidebar-row-gap, var(--gutter, var(--space-s)));
+    column-gap: var(--sidebar-column-gap, var(--gutter, var(--space-m)));
+}
+
+.sidebar:not([data-direction]) > :first-child {
+    flex-basis: var(--sidebar-target-width, 20rem);
+    flex-grow: 1;
+}
+
+.sidebar:not([data-direction]) > :last-child {
+    flex-basis: 0;
+    flex-grow: 999;
+    min-width: var(--sidebar-content-min-width, 50%);
+}
+
+.sidebar[data-reversed] {
+    flex-direction: row-reverse;
+}
+
+.sidebar[data-direction='rtl'] > :last-child {
+    flex-basis: var(--sidebar-target-width, 20rem);
+    flex-grow: 1;
+}
+
+.sidebar[data-direction='rtl'] > :first-child {
+    flex-basis: 0;
+    flex-grow: 999;
+    min-width: var(--sidebar-content-min-width, 50%);
+}

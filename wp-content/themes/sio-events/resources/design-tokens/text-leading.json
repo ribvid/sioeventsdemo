@@ -1,0 +1,22 @@
+{
+  "title": "Leading",
+  "description": "Ratio-based leading/line-height values",
+  "items": [
+    {
+      "name": "Flat",
+      "value": 1
+    },
+    {
+      "name": "Tight",
+      "value": 1.3
+    },
+    {
+      "name": "Standard",
+      "value": 1.5
+    },
+    {
+      "name": "Relaxed",
+      "value": 1.7
+    }
+  ]
+}
