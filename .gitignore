@@ -4,6 +4,7 @@ wp-content/*
 !wp-content/plugins/
 !wp-content/themes/
 !wp-content/index.php
+!wp-content/uploads/gravity-forms-pdfs/
 
 # Ignore specific plugins
 wp-content/plugins/query-monitor/
@@ -29,6 +30,7 @@ auth.json
 # Ignore databases
 *.sql
 *.sql.gz
+!dump.sql
 
 # Ignore IDE & OS files
 .idea/
