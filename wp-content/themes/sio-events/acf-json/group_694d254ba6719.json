@@ -605,7 +605,7 @@
                 "class": "",
                 "id": ""
             },
-            "message": "Sporočila lahko vsebuje placeholderje, kot so:\r\n\r\n${ime_dogodka}\r\n${datum_prijave}\r\n${ime_udeleženca}\r\n${priimek_udeleženca}\r\n${email_udelezenca}\r\n${qr_koda}\r\n\r\nVsaka izvedba ima lahko tudi dodatne placeholderje, ki jih lahko uporabite v sporočilu.",
+            "message": "Sporočila lahko vsebujejo placeholderje, kot so:\r\n\r\n<pre>\r\n${ime_dogodka}\r\n${datum_prijave}\r\n${ime_udeleženca}\r\n${priimek_udeleženca}\r\n${email_udelezenca}\r\n<\/pre>\r\n\r\nVsaka izvedba ima lahko tudi dodatne placeholderje, dodani v zavihku \"Placeholderji\", ki jih lahko uporabite v sporočilu.",
             "new_lines": "wpautop",
             "esc_html": 0
         },
@@ -1064,5 +1064,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1766740481
+    "modified": 1766740569
 }
