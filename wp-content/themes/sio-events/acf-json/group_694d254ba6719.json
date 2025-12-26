@@ -684,6 +684,23 @@
                     "rows": "",
                     "placeholder": "",
                     "new_lines": ""
+                },
+                {
+                    "key": "field_694e51cc969ae",
+                    "label": "Posodobi",
+                    "name": "update",
+                    "aria-label": "",
+                    "type": "button",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "callback": "update_form_submission_notification",
+                    "allow_in_bindings": 0
                 }
             ]
         },
@@ -762,6 +779,23 @@
                     "rows": "",
                     "placeholder": "",
                     "new_lines": ""
+                },
+                {
+                    "key": "field_694e51ee969af",
+                    "label": "Posodobi",
+                    "name": "update",
+                    "aria-label": "",
+                    "type": "button",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "callback": "update_form_cancellation_notification",
+                    "allow_in_bindings": 0
                 }
             ]
         },
@@ -1030,5 +1064,5 @@
     "description": "",
     "show_in_rest": 0,
     "display_title": "",
-    "modified": 1766739147
+    "modified": 1766740481
 }
