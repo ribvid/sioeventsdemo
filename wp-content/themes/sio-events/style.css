@@ -11,3 +11,90 @@ License URI:        https://opensource.org/licenses/MIT
 Requires PHP:       8.2
 Requires at least:  6.6
 */
+add_action('admin_menu', function() {
+    // This creates a standalone menu item on the main left sidebar
+    add_menu_page(
+        'Fuzzy Tag Scanner',       // Page Title
+        'Fuzzy Scanner',           // Menu Title
+        'manage_options',          // Capability
+        'fuzzy-tag-scanner',       // Menu Slug
+        'render_fuzzy_scanner_page',// Callback function
+        'dashicons-search',        // Icon (Magnifying glass)
+        80                         // Position (near Settings)
+    );
+});
+
+function render_fuzzy_scanner_page() {
+    // Prevent timeout if you have thousands of tags
+    set_time_limit(300); 
+
+    // Get all post tags
+    $tags = get_terms(['taxonomy' => 'post_tag', 'hide_empty' => false, 'number' => 0]); 
+    
+    echo '<div class="wrap"><h1>Fuzzy Tag Scanner</h1>';
+    
+    // Check if tags exist
+    if ( is_wp_error( $tags ) || empty( $tags ) ) {
+        echo '<p>No tags found.</p></div>';
+        return;
+    }
+
+    echo '<p>Scanning ' . count($tags) . ' tags for likely duplicates (Levenshtein distance < 2)...</p>';
+    echo '<div style="background:#fff; padding:20px; border:1px solid #ccd0d4; max-width: 800px;">';
+    
+    $processed_ids = [];
+    $found_matches = false;
+
+    foreach ($tags as $tag_a) {
+        // Skip if we've already grouped this tag
+        if (in_array($tag_a->term_id, $processed_ids)) continue;
+
+        $group = [];
+        
+        foreach ($tags as $tag_b) {
+            // Don't compare tag to itself
+            if ($tag_a->term_id === $tag_b->term_id) continue;
+            // Don't check tags already assigned to other groups
+            if (in_array($tag_b->term_id, $processed_ids)) continue;
+
+            // 1. Check strict Levenshtein distance (Typo detection)
+            $dist = levenshtein($tag_a->name, $tag_b->name);
+            
+            // 2. Check for substring inclusion (e.g. "brin" vs "brin-tag")
+            // We only flag it if the length difference is small to avoid matching "art" with "party"
+            $is_substring = (strpos($tag_b->name, $tag_a->name) !== false && strlen($tag_b->name) < strlen($tag_a->name) + 4);
+
+            if ($dist <= 2 || $is_substring) {
+                $group[] = $tag_b;
+                $processed_ids[] = $tag_b->term_id;
+            }
+        }
+
+        if (!empty($group)) {
+            $found_matches = true;
+            // Mark the main tag as processed too
+            $processed_ids[] = $tag_a->term_id;
+            
+            echo '<div style="margin-bottom: 20px; border-bottom:1px solid #eee; padding-bottom:15px;">';
+            echo '<strong style="color:#d63638; font-size:1.3em;">' . esc_html($tag_a->name) . '</strong> <span style="color:#666">(' . $tag_a->count . ' posts)</span>';
+            echo '<p style="margin:5px 0;">Might be the same as:</p>';
+            echo '<ul style="margin-top:5px; list-style:disc; margin-left:25px; background:#f9f9f9; padding:10px;">';
+            
+            foreach ($group as $match) {
+                echo '<li><strong>' . esc_html($match->name) . '</strong> <span style="color:#666">(' . $match->count . ' posts)</span> <span style="font-size:0.8em; color:#999;">ID: ' . $match->term_id . '</span></li>';
+            }
+            echo '</ul>';
+            
+            // Direct Link to TaxoPress Merge
+            // Note: We try to link to the standard TaxoPress merge page. 
+            echo '<a href="' . admin_url('admin.php?page=st_manage&tab=merge') . '" target="_blank" class="button button-secondary">Open Merge Tool</a>';
+            echo '</div>';
+        }
+    }
+    
+    if (!$found_matches) {
+        echo '<p style="color:green; font-weight:bold;">No duplicate tags found!</p>';
+    }
+
+    echo '</div></div>';
+}
