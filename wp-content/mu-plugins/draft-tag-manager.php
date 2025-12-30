@@ -39,74 +39,85 @@ add_action('admin_menu', 'registracija_strani_draft_oznake');
 // ============================================================================
 
 /**
- * Handle approval or rejection of draft tags
+ * Handle approval or rejection of individual draft tags
  */
 function obdelaj_potrditev_oznake() {
-    // Check if approval or rejection action was submitted
-    if (!isset($_POST['action']) || !in_array($_POST['action'], ['approve_tag', 'reject_tag'])) {
+    // Check for new single-tag action types
+    if (!isset($_POST['action']) || !in_array($_POST['action'], ['approve_single_tag', 'reject_single_tag'])) {
         return;
     }
 
-    if (!isset($_POST['post_id'])) {
+    // Validate inputs
+    if (!isset($_POST['tag_name']) || !isset($_POST['post_ids']) || !is_array($_POST['post_ids'])) {
         return;
     }
+
+    $tag_name = sanitize_text_field($_POST['tag_name']);
+    $post_ids = array_map('intval', $_POST['post_ids']);
 
     // Security: Verify nonce
-    $post_id = intval($_POST['post_id']);
-    if (!isset($_POST['draft_tag_nonce']) || !wp_verify_nonce($_POST['draft_tag_nonce'], 'draft_tag_action_' . $post_id)) {
+    if (!isset($_POST['draft_tag_nonce']) || !wp_verify_nonce($_POST['draft_tag_nonce'], 'draft_tag_action_' . md5($tag_name))) {
         wp_die('Varnostno preverjanje ni uspelo.');
-    }
-
-    // Get draft tags
-    $draft_tags = get_post_meta($post_id, 'draft_tag', true);
-
-    if (!$draft_tags) {
-        return;
     }
 
     $action = $_POST['action'];
 
-    // APPROVAL: Convert to real tags (for posts only) and delete draft field
-    if ($action === 'approve_tag') {
-        $post = get_post($post_id);
+    // Process each post that suggested this tag
+    foreach ($post_ids as $post_id) {
+        // Get current draft tags
+        $draft_tags = get_post_meta($post_id, 'draft_tag', true);
 
-        // Only create actual tags for 'post' post type
-        if ($post && $post->post_type === 'post') {
-            // Split comma-separated tags into individual tags
-            $tags_array = array_map('trim', explode(',', $draft_tags));
-            // Remove empty values
-            $tags_array = array_filter($tags_array);
-
-            // Add tags (append mode - doesn't replace existing tags)
-            wp_set_post_tags($post_id, $tags_array, true);
+        if (!$draft_tags) {
+            continue;
         }
 
-        // Delete draft_tag field
-        delete_post_meta($post_id, 'draft_tag');
+        // Split into array
+        $tags_array = array_map('trim', explode(',', $draft_tags));
+        $tags_array = array_filter($tags_array);
 
-        // Success message
-        add_settings_error(
-            'draft_tags_messages',
-            'draft_tags_approved',
-            'Oznake so bile uspešno potrjene in dodane.',
-            'updated'
-        );
-        set_transient('draft_tags_admin_notice', get_settings_errors('draft_tags_messages'), 30);
+        // Remove the specific tag (case-insensitive)
+        $tags_array = array_filter($tags_array, function($tag) use ($tag_name) {
+            return strcasecmp($tag, $tag_name) !== 0;
+        });
+
+        if ($action === 'approve_single_tag') {
+            $post = get_post($post_id);
+
+            // Add to real tags (only for 'post' type)
+            if ($post && $post->post_type === 'post') {
+                wp_set_post_tags($post_id, [$tag_name], true); // Append mode
+            }
+        }
+
+        // Update or delete draft_tag field
+        if (empty($tags_array)) {
+            // No more draft tags, delete the field
+            delete_post_meta($post_id, 'draft_tag');
+        } else {
+            // Still have draft tags, update the field
+            $updated_tags = implode(', ', $tags_array);
+            update_post_meta($post_id, 'draft_tag', $updated_tags);
+        }
     }
 
-    // REJECTION: Delete draft field without converting
-    elseif ($action === 'reject_tag') {
-        delete_post_meta($post_id, 'draft_tag');
-
-        // Success message
+    // Success messages
+    if ($action === 'approve_single_tag') {
         add_settings_error(
             'draft_tags_messages',
-            'draft_tags_rejected',
-            'Predlagane oznake so bile zavrnjene.',
+            'draft_tag_approved',
+            sprintf('Oznaka "%s" je bila potrjena za %d objav(e).', $tag_name, count($post_ids)),
             'updated'
         );
-        set_transient('draft_tags_admin_notice', get_settings_errors('draft_tags_messages'), 30);
+    } else {
+        add_settings_error(
+            'draft_tags_messages',
+            'draft_tag_rejected',
+            sprintf('Oznaka "%s" je bila zavrnjena za %d objav(e).', $tag_name, count($post_ids)),
+            'updated'
+        );
     }
+
+    set_transient('draft_tags_admin_notice', get_settings_errors('draft_tags_messages'), 30);
 
     // Redirect back to same page to refresh the list
     wp_redirect(admin_url('edit.php?page=pregled-draft-oznak'));
@@ -119,7 +130,7 @@ add_action('admin_init', 'obdelaj_potrditev_oznake');
 // ============================================================================
 
 /**
- * Display admin page with table of pending draft tags
+ * Display admin page with table of pending draft tags (tag-centric view)
  */
 function prikazi_stran_draft_oznake() {
     ?>
@@ -159,62 +170,102 @@ function prikazi_stran_draft_oznake() {
 
         $query = new WP_Query($args);
 
-        if ($query->have_posts()) : ?>
+        // Transform post-centric data to tag-centric
+        $tag_groups = [];
+
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $post_id = get_the_ID();
+                $draft_tags = get_post_meta($post_id, 'draft_tag', true);
+
+                // Split comma-separated tags
+                $tags_array = array_map('trim', explode(',', $draft_tags));
+                $tags_array = array_filter($tags_array);
+
+                // Build post info
+                $post_info = [
+                    'post_id' => $post_id,
+                    'post_title' => get_the_title(),
+                    'author' => get_the_author(),
+                    'post_type' => get_post_type(),
+                    'edit_link' => get_edit_post_link()
+                ];
+
+                // Group by tag
+                foreach ($tags_array as $tag) {
+                    if (!isset($tag_groups[$tag])) {
+                        $tag_groups[$tag] = [];
+                    }
+                    $tag_groups[$tag][] = $post_info;
+                }
+            }
+            wp_reset_postdata();
+
+            // Sort alphabetically
+            ksort($tag_groups);
+        }
+
+        if (!empty($tag_groups)) : ?>
 
             <table class="wp-list-table widefat fixed striped">
                 <thead>
                     <tr>
-                        <th scope="col" style="width: 25%;">Naslov</th>
-                        <th scope="col" style="width: 12%;">Avtor</th>
-                        <th scope="col" style="width: 10%;">Tip</th>
-                        <th scope="col" style="width: 10%;">Status</th>
-                        <th scope="col" style="width: 25%;"><strong>Predlagane oznake</strong></th>
-                        <th scope="col" style="width: 18%;">Akcija</th>
+                        <th scope="col" style="width: 25%;"><strong>Oznaka</strong></th>
+                        <th scope="col" style="width: 55%;">Predlagana v objavah</th>
+                        <th scope="col" style="width: 20%;">Akcija</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($query->have_posts()) : $query->the_post();
-                        $draft_tags = get_post_meta(get_the_ID(), 'draft_tag', true);
-                        $post_type_obj = get_post_type_object(get_post_type());
-                        $post_type_label = $post_type_obj ? $post_type_obj->labels->singular_name : get_post_type();
-                        $status_obj = get_post_status_object(get_post_status());
-                        $status_label = $status_obj ? $status_obj->label : get_post_status();
-                    ?>
+                    <?php foreach ($tag_groups as $tag_name => $posts) : ?>
                         <tr>
                             <td>
-                                <strong>
-                                    <a href="<?php echo esc_url(get_edit_post_link()); ?>">
-                                        <?php the_title(); ?>
-                                    </a>
-                                </strong>
-                            </td>
-                            <td><?php the_author(); ?></td>
-                            <td><?php echo esc_html($post_type_label); ?></td>
-                            <td><?php echo esc_html($status_label); ?></td>
-                            <td>
-                                <span style="background: #e6f7ff; color: #005a87; padding: 4px 10px; border-radius: 3px; border: 1px solid #1890ff; display: inline-block;">
-                                    <?php echo esc_html($draft_tags); ?>
+                                <span style="background: #e6f7ff; color: #005a87; padding: 6px 12px; border-radius: 3px; border: 1px solid #1890ff; display: inline-block; font-weight: bold;">
+                                    <?php echo esc_html($tag_name); ?>
                                 </span>
+                            </td>
+                            <td>
+                                <ul style="margin: 0; padding-left: 20px;">
+                                    <?php foreach ($posts as $post_info) : ?>
+                                        <li>
+                                            <a href="<?php echo esc_url($post_info['edit_link']); ?>">
+                                                <?php echo esc_html($post_info['post_title']); ?>
+                                            </a>
+                                            <span style="color: #666;">(<?php echo esc_html($post_info['author']); ?>)</span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
                             </td>
                             <td>
                                 <!-- Approve Form -->
                                 <form method="post" style="display: inline-block; margin-right: 8px;">
-                                    <input type="hidden" name="post_id" value="<?php echo get_the_ID(); ?>">
-                                    <input type="hidden" name="action" value="approve_tag">
-                                    <?php wp_nonce_field('draft_tag_action_' . get_the_ID(), 'draft_tag_nonce'); ?>
-                                    <button type="submit" class="button button-primary">Potrdi</button>
+                                    <input type="hidden" name="tag_name" value="<?php echo esc_attr($tag_name); ?>">
+                                    <?php foreach ($posts as $post_info) : ?>
+                                        <input type="hidden" name="post_ids[]" value="<?php echo $post_info['post_id']; ?>">
+                                    <?php endforeach; ?>
+                                    <input type="hidden" name="action" value="approve_single_tag">
+                                    <?php wp_nonce_field('draft_tag_action_' . md5($tag_name), 'draft_tag_nonce'); ?>
+                                    <button type="submit" class="button button-primary">
+                                        Potrdi (<?php echo count($posts); ?>)
+                                    </button>
                                 </form>
 
                                 <!-- Reject Form -->
                                 <form method="post" style="display: inline-block;">
-                                    <input type="hidden" name="post_id" value="<?php echo get_the_ID(); ?>">
-                                    <input type="hidden" name="action" value="reject_tag">
-                                    <?php wp_nonce_field('draft_tag_action_' . get_the_ID(), 'draft_tag_nonce'); ?>
-                                    <button type="submit" class="button button-secondary" onclick="return confirm('Ali ste prepričani, da želite zavrniti te oznake?');">Zavrni</button>
+                                    <input type="hidden" name="tag_name" value="<?php echo esc_attr($tag_name); ?>">
+                                    <?php foreach ($posts as $post_info) : ?>
+                                        <input type="hidden" name="post_ids[]" value="<?php echo $post_info['post_id']; ?>">
+                                    <?php endforeach; ?>
+                                    <input type="hidden" name="action" value="reject_single_tag">
+                                    <?php wp_nonce_field('draft_tag_action_' . md5($tag_name), 'draft_tag_nonce'); ?>
+                                    <button type="submit" class="button button-secondary"
+                                            onclick="return confirm('Ali ste prepričani, da želite zavrniti oznako \'<?php echo esc_js($tag_name); ?>\' za <?php echo count($posts); ?> objav(e)?');">
+                                        Zavrni
+                                    </button>
                                 </form>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
 
@@ -225,9 +276,7 @@ function prikazi_stran_draft_oznake() {
                     Trenutno ni nobenih predlaganih oznak v čakalni vrsti. Vse je urejeno!
                 </p>
             </div>
-        <?php endif;
-        wp_reset_postdata();
-        ?>
+        <?php endif; ?>
     </div>
     <?php
 }
