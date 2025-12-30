@@ -7,14 +7,13 @@ Description: Scans both WordPress tags and draft tags for similar/duplicate entr
 add_action('admin_menu', 'register_fuzzy_draft_scanner_menu', 999);
 
 function register_fuzzy_draft_scanner_menu() {
-    add_menu_page(
-        'Fuzzy Draft Scanner',
-        'Fuzzy Draft',
-        'manage_options',
-        'fuzzy-draft-scanner',
-        'render_fuzzy_draft_scanner_page',
-        'dashicons-search',
-        3  // Position after Fuzzy Scanner (which is at 2)
+    add_submenu_page(
+        'edit.php',                      // Parent slug (Posts menu)
+        'Fuzzy Draft Scanner',           // Page title
+        'Fuzzy Draft Scanner',           // Menu title
+        'manage_options',                // Required capability
+        'fuzzy-draft-scanner',           // Page slug
+        'render_fuzzy_draft_scanner_page' // Callback function
     );
 }
 
@@ -106,6 +105,23 @@ function render_fuzzy_draft_scanner_page() {
         wp_reset_postdata();
     }
 
+    // Deduplicate draft tags by name (focus on tag names, not post context)
+    $unique_draft_tags = [];
+    foreach ($items as $item) {
+        if ($item['type'] === 'draft_tag') {
+            $tag_name_lower = strtolower($item['name']);
+            if (!isset($unique_draft_tags[$tag_name_lower])) {
+                $unique_draft_tags[$tag_name_lower] = $item;
+            }
+        }
+    }
+
+    // Rebuild items array with deduplicated draft tags + WordPress tags
+    $items = array_filter($items, function($item) {
+        return $item['type'] === 'tag';
+    });
+    $items = array_merge($items, array_values($unique_draft_tags));
+
     echo '<div class="card" style="max-width: 900px; padding: 20px; margin-top: 20px;">';
     echo '<h3>Scanning ' . count($items) . ' items (' . count($tags) . ' tags + ' . ($draft_tag_posts->found_posts) . ' draft tag sources)...</h3>';
     echo '<p>Sorted by shortest name first. Comparing WordPress tags and draft tags for duplicates.</p><hr>';
@@ -126,7 +142,7 @@ function render_fuzzy_draft_scanner_page() {
     // 5. Comparison loop
     foreach ($items as $item_a) {
         // Create unique identifier for this item
-        $id_a = $item_a['type'] . '_' . ($item_a['type'] === 'tag' ? $item_a['id'] : $item_a['post_id'] . '_' . $item_a['name']);
+        $id_a = $item_a['type'] . '_' . ($item_a['type'] === 'tag' ? $item_a['id'] : strtolower($item_a['name']));
 
         if (in_array($id_a, $processed_ids)) continue;
 
@@ -134,7 +150,7 @@ function render_fuzzy_draft_scanner_page() {
 
         foreach ($items as $item_b) {
             // Create unique identifier for comparison item
-            $id_b = $item_b['type'] . '_' . ($item_b['type'] === 'tag' ? $item_b['id'] : $item_b['post_id'] . '_' . $item_b['name']);
+            $id_b = $item_b['type'] . '_' . ($item_b['type'] === 'tag' ? $item_b['id'] : strtolower($item_b['name']));
 
             if ($id_a === $id_b) continue;
             if (in_array($id_b, $processed_ids)) continue;
@@ -156,7 +172,7 @@ function render_fuzzy_draft_scanner_page() {
             } elseif (strlen($name_a) <= 5) {
                 $allowable_dist = 2;  // Moderate for 4-5 char tags
             } else {
-                $allowable_dist = 3;  // Looser for 6+ char tags
+                $allowable_dist = 2;  // Stricter for 6+ char tags to prevent false matches
             }
 
             if ($dist <= $allowable_dist || $is_similar_clean) {

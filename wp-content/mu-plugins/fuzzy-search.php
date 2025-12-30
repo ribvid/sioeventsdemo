@@ -93,7 +93,7 @@ function render_fuzzy_scanner_page() {
             } elseif (strlen($name_a) <= 5) {
                 $allowable_dist = 2;  // Moderate for 4-5 char tags
             } else {
-                $allowable_dist = 3;  // Looser for 6+ char tags (plurals, typos)
+                $allowable_dist = 2;  // Stricter for 6+ char tags to prevent false matches
             }
 
             if ($dist <= $allowable_dist || $is_similar_clean) {
