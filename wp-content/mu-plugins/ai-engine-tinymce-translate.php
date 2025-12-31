@@ -2,7 +2,7 @@
 /*
 Plugin Name: AI Engine TinyMCE Translate
 Description: Adds AI Engine translate post functionality to TinyMCE editor
-Version: 1.0.3
+Version: 1.1.0
 Author: Custom
 */
 

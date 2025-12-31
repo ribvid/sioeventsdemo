@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Constants
-define('AIET_VERSION', '1.0.3');
+define('AIET_VERSION', '1.1.0');
 define('AIET_PATH', __DIR__);
 define('AIET_URL', WPMU_PLUGIN_URL . '/ai-engine-tinymce-translate');
 
@@ -88,8 +88,15 @@ function aiet_enqueue_scripts() {
         'window.AIET_Config = %s;',
         wp_json_encode([
             'restUrl' => rest_url('mwai/v1/ai/magic_wand'),
+            'restRoot' => rest_url(),
             'nonce' => wp_create_nonce('wp_rest'),
             'postId' => $post_id,
+            'polylang' => [
+                'enabled' => function_exists('pll_get_post_language'),
+                'currentLang' => function_exists('pll_get_post_language') ? pll_get_post_language($post_id) : null,
+                'translations' => function_exists('pll_get_post_translations') ? pll_get_post_translations($post_id) : [],
+                'slovenePostId' => function_exists('pll_get_post') ? pll_get_post($post_id, 'sl') : null,
+            ],
             'i18n' => [
                 'buttonTitle' => __('Translate Post to Site Language', 'ai-engine-tinymce-translate'),
                 'buttonLabel' => __('Translate', 'ai-engine-tinymce-translate'),
@@ -98,6 +105,14 @@ function aiet_enqueue_scripts() {
                 'errorGeneric' => __('Translation failed. Please try again.', 'ai-engine-tinymce-translate'),
                 'errorNoContent' => __('No title or content to translate. Please add text first.', 'ai-engine-tinymce-translate'),
                 'errorAiEngine' => __('AI Engine translation service is not available.', 'ai-engine-tinymce-translate'),
+                'autoTranslateButtonTitle' => __('Auto-translate from Slovene version', 'ai-engine-tinymce-translate'),
+                'autoTranslateButtonLabel' => __('From Slovene', 'ai-engine-tinymce-translate'),
+                'autoTranslateProcessing' => __('Fetching Slovene content and translating...', 'ai-engine-tinymce-translate'),
+                'autoTranslateSuccess' => __('Auto-translation from Slovene completed!', 'ai-engine-tinymce-translate'),
+                'errorNoSlovene' => __('No Slovene translation found for this post.', 'ai-engine-tinymce-translate'),
+                'errorPolylangDisabled' => __('Polylang is not available.', 'ai-engine-tinymce-translate'),
+                'errorEmptyContent' => __('Current post is not empty. Auto-translate only works on empty posts.', 'ai-engine-tinymce-translate'),
+                'errorSloveneEmpty' => __('Slovene version has no content to translate.', 'ai-engine-tinymce-translate'),
             ]
         ])
     ), 'before');
@@ -115,6 +130,10 @@ function aiet_register_button($buttons, $editor_id) {
     // Only add to the main content editor
     if ($editor_id === 'content' && aiet_check_dependencies()) {
         $buttons[] = 'aiet_translate';
+        // Add auto-translate button if Polylang is available
+        if (function_exists('pll_get_post_language')) {
+            $buttons[] = 'aiet_auto_translate';
+        }
     }
     return $buttons;
 }

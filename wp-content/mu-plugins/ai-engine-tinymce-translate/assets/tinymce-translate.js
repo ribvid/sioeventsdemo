@@ -31,6 +31,20 @@
         });
 
         /**
+         * Add auto-translate button if Polylang is enabled
+         */
+        if (window.AIET_Config.polylang && window.AIET_Config.polylang.enabled) {
+            editor.addButton('aiet_auto_translate', {
+                text: window.AIET_Config.i18n.autoTranslateButtonLabel,
+                icon: 'translate',
+                tooltip: window.AIET_Config.i18n.autoTranslateButtonTitle,
+                onclick: function() {
+                    handleAutoTranslateClick(editor);
+                }
+            });
+        }
+
+        /**
          * Handle the translate button click
          *
          * @param {Object} editor - TinyMCE editor instance
@@ -68,6 +82,121 @@
 
             // Perform translation (pass both content and title)
             performTranslation(editor, content, title, notification);
+        }
+
+        /**
+         * Handle the auto-translate from Slovene button click
+         *
+         * @param {Object} editor - TinyMCE editor instance
+         */
+        function handleAutoTranslateClick(editor) {
+            var config = window.AIET_Config;
+
+            // Validate Polylang is available
+            if (!config.polylang || !config.polylang.enabled) {
+                editor.notificationManager.open({
+                    text: config.i18n.errorPolylangDisabled,
+                    type: 'error',
+                    timeout: 3000
+                });
+                return;
+            }
+
+            // Check if Slovene version exists
+            if (!config.polylang.slovenePostId) {
+                editor.notificationManager.open({
+                    text: config.i18n.errorNoSlovene,
+                    type: 'warning',
+                    timeout: 4000
+                });
+                return;
+            }
+
+            // Get current editor content and title
+            var currentContent = editor.getContent({ format: 'html' });
+            var titleField = document.getElementById('title');
+            var currentTitle = titleField ? titleField.value.trim() : '';
+
+            // Check if current post is empty
+            var hasContent = currentContent && currentContent.trim() !== '' &&
+                             currentContent.trim() !== '<p></p>' &&
+                             currentContent.trim() !== '<p><br></p>';
+            var hasTitle = currentTitle && currentTitle !== '';
+
+            if (hasContent || hasTitle) {
+                editor.notificationManager.open({
+                    text: config.i18n.errorEmptyContent,
+                    type: 'warning',
+                    timeout: 4000
+                });
+                return;
+            }
+
+            // Show loading notification
+            var notification = editor.notificationManager.open({
+                text: config.i18n.autoTranslateProcessing,
+                type: 'info',
+                closeButton: false
+            });
+
+            // Set editor to readonly
+            editor.setMode('readonly');
+
+            // Fetch and translate
+            fetchAndTranslateSlovene(editor, config.polylang.slovenePostId, notification);
+        }
+
+        /**
+         * Fetch Slovene post content and translate it
+         *
+         * @param {Object} editor - TinyMCE editor instance
+         * @param {number} slovenePostId - ID of Slovene post
+         * @param {Object} notification - Notification object
+         */
+        function fetchAndTranslateSlovene(editor, slovenePostId, notification) {
+            var config = window.AIET_Config;
+
+            // Fetch Slovene post via WordPress REST API
+            fetch(config.restRoot + 'wp/v2/posts/' + slovenePostId, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-WP-Nonce': config.nonce
+                }
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Failed to fetch Slovene post');
+                return response.json();
+            })
+            .then(function(slovenePost) {
+                // Extract title and content
+                var sloveneTitle = slovenePost.title && slovenePost.title.rendered ?
+                                  slovenePost.title.rendered : '';
+                var sloveneContent = slovenePost.content && slovenePost.content.rendered ?
+                                    slovenePost.content.rendered : '';
+
+                // Validate Slovene post has content
+                var hasSlTitle = sloveneTitle && sloveneTitle.trim() !== '';
+                var hasSlContent = sloveneContent && sloveneContent.trim() !== '' &&
+                                  sloveneContent.trim() !== '<p></p>';
+
+                if (!hasSlTitle && !hasSlContent) {
+                    notification.close();
+                    editor.setMode('design');
+                    editor.notificationManager.open({
+                        text: config.i18n.errorSloveneEmpty,
+                        type: 'warning',
+                        timeout: 3000
+                    });
+                    return;
+                }
+
+                // Reuse existing performTranslation function
+                performTranslation(editor, sloveneContent, sloveneTitle, notification);
+            })
+            .catch(function(error) {
+                handleTranslationError(editor, error, notification);
+            });
         }
 
         /**
