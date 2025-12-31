@@ -147,6 +147,7 @@ function aiet_enqueue_scripts() {
                 'errorPolylangDisabled' => __('Polylang is not available.', 'ai-engine-tinymce-translate'),
                 'errorEmptyContent' => __('Current post is not empty. Auto-translate only works on empty posts.', 'ai-engine-tinymce-translate'),
                 'errorSloveneEmpty' => __('Slovene version has no content to translate.', 'ai-engine-tinymce-translate'),
+                'aiDisclaimer' => __('This content was generated with AI', 'ai-engine-tinymce-translate'),
             ]
         ])
     ), 'before');

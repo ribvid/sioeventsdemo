@@ -307,7 +307,13 @@
 
             // Update content if translated
             if (contentResult && contentResult.success && contentResult.data && contentResult.data.result) {
-                editor.setContent(contentResult.data.result);
+                var translatedContent = contentResult.data.result;
+
+                // Add AI disclaimer at the end
+                var disclaimer = '<p><em>' + window.AIET_Config.i18n.aiDisclaimer + '</em></p>';
+                var contentWithDisclaimer = translatedContent + disclaimer;
+
+                editor.setContent(contentWithDisclaimer);
                 updated = true;
             }
 
