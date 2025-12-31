@@ -54,6 +54,40 @@ function aiet_dependency_notice() {
 add_action('admin_notices', 'aiet_dependency_notice');
 
 /**
+ * Get the Slovene post ID for translation
+ * Checks both saved relationships and the from_post URL parameter
+ *
+ * @param int $post_id Current post ID
+ * @return int|null Slovene post ID or null if not found
+ */
+function aiet_get_slovene_post_id($post_id) {
+    if (!function_exists('pll_get_post')) {
+        return null;
+    }
+
+    // First, check if there's a saved translation relationship
+    $slovene_id = pll_get_post($post_id, 'sl');
+    if ($slovene_id && $slovene_id > 0) {
+        return $slovene_id;
+    }
+
+    // If no saved relationship, check the from_post URL parameter
+    // This handles the case when adding a new translation
+    if (isset($_GET['from_post']) && isset($_GET['new_lang'])) {
+        $from_post_id = (int) $_GET['from_post'];
+        if ($from_post_id > 0) {
+            // Verify the from_post is actually in Slovene
+            $from_post_lang = pll_get_post_language($from_post_id);
+            if ($from_post_lang === 'sl') {
+                return $from_post_id;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
  * Enqueue scripts for the TinyMCE editor
  */
 function aiet_enqueue_scripts() {
@@ -95,7 +129,7 @@ function aiet_enqueue_scripts() {
                 'enabled' => function_exists('pll_get_post_language'),
                 'currentLang' => function_exists('pll_get_post_language') ? pll_get_post_language($post_id) : null,
                 'translations' => function_exists('pll_get_post_translations') ? pll_get_post_translations($post_id) : [],
-                'slovenePostId' => function_exists('pll_get_post') ? pll_get_post($post_id, 'sl') : null,
+                'slovenePostId' => aiet_get_slovene_post_id($post_id),
             ],
             'i18n' => [
                 'buttonTitle' => __('Translate Post to Site Language', 'ai-engine-tinymce-translate'),
