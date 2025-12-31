@@ -1,0 +1,102 @@
+/**
+ * AI Excerpt Generator Styles
+ * Styling for the excerpt generation button and messages
+ */
+
+/* Button wrapper */
+#excerpt-generator-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+    border-top: 1px solid #dcdcde;
+    border-bottom: 1px solid #dcdcde;
+    background: #f6f7f7;
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+
+/* Generate button */
+#generate-excerpt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 2.15384615;
+    min-height: 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#generate-excerpt-btn:hover:not(:disabled) {
+    background: #f0f0f1;
+    border-color: #0a4b78;
+    color: #0a4b78;
+}
+
+#generate-excerpt-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#generate-excerpt-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Spinner */
+#excerpt-generator-wrapper .spinner {
+    margin: 0 0 0 10px;
+    float: none;
+}
+
+#excerpt-generator-wrapper .spinner.is-active {
+    display: inline-block;
+    visibility: visible;
+}
+
+/* Messages */
+#excerpt-generator-message {
+    font-size: 13px;
+    margin-left: 10px;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+#excerpt-generator-message.success {
+    color: #00a32a;
+    background: #edfaef;
+    border-left: 3px solid #00a32a;
+}
+
+#excerpt-generator-message.error {
+    color: #d63638;
+    background: #fcf0f1;
+    border-left: 3px solid #d63638;
+}
+
+/* Excerpt field enhancement */
+#excerpt:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: 2px solid transparent;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    #excerpt-generator-wrapper {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    #generate-excerpt-btn {
+        margin-bottom: 10px;
+    }
+
+    #excerpt-generator-message {
+        flex-basis: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
