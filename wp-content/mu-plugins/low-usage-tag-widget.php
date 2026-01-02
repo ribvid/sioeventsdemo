@@ -62,27 +62,28 @@ function lut_get_low_usage_tags() {
 }
 
 /**
- * Get all tags for merge dropdown (excluding dismissed and low-usage)
+ * Get all tags for merge dropdown
  */
 function lut_get_merge_target_tags() {
-    $threshold = get_option('lut_threshold', 3);
-
     $tags = get_terms([
         'taxonomy' => 'post_tag',
         'hide_empty' => false,
-        'number' => 0,
-        'orderby' => 'name',
-        'order' => 'ASC'
+        'number' => 0
     ]);
 
     if (is_wp_error($tags)) {
         return [];
     }
 
-    // Filter tags with usage >= threshold
-    return array_filter($tags, function($tag) use ($threshold) {
-        return $tag->count >= $threshold;
+    // Sort by count descending (most used first), then by name
+    usort($tags, function($a, $b) {
+        if ($a->count === $b->count) {
+            return strcmp($a->name, $b->name);
+        }
+        return $b->count - $a->count;
     });
+
+    return $tags;
 }
 
 /**
@@ -248,12 +249,17 @@ function lut_get_inline_js() {
             const tagName = btn.data('tag-name');
 
             // Create merge dialog
-            const mergeTargets = <?php echo json_encode(array_map(function($tag) {
+            const allTargets = <?php echo json_encode(array_map(function($tag) {
                 return ['id' => $tag->term_id, 'name' => $tag->name, 'count' => $tag->count];
             }, $merge_targets)); ?>;
 
+            // Filter out the source tag itself
+            const mergeTargets = allTargets.filter(function(target) {
+                return target.id !== tagId;
+            });
+
             if (mergeTargets.length === 0) {
-                alert('Ni ustreznih oznak za združevanje. Ustvari več oznak z vsaj 3 prispevki.');
+                alert('Ni drugih oznak za združevanje.');
                 return;
             }
 
