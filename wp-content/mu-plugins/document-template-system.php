@@ -1,0 +1,15 @@
+<?php
+/*
+Plugin Name: AI Engine TinyMCE Translate
+Description: Adds AI Engine translate post functionality to TinyMCE editor
+Version: 1.1.0
+Author: Custom
+*/
+
+// Security check
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Load the actual plugin from subdirectory
+require_once __DIR__ . '/document-template-system/document-template-system.php';

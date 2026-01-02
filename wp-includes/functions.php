@@ -3059,7 +3059,7 @@ function wp_check_filetype( $filename, $mimes = null ) {
 			break;
 		}
 	}
-
+    var_dump($type); var_dump($ext);
 	return compact( 'ext', 'type' );
 }
 
