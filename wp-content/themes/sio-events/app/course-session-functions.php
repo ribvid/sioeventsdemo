@@ -184,3 +184,255 @@ function duplicate_form($post_id)
 
 // Delete post meta on form delete
 //    delete_post_meta(115, 'submission_form_id');
+
+
+function send_test_registration_email($post_id)
+{
+    if (!current_user_can('manage_options')) {
+        return ['success' => false, 'message' => 'Nimate dovoljenja'];
+    }
+
+    $current_user = wp_get_current_user();
+    $test_email = $current_user->user_email;
+
+    $template = get_field('email_template_registration', $post_id);
+
+    if (!$template) {
+        return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
+    }
+
+    $html_content = get_email_html($template->ID);
+
+    if (!$html_content) {
+        return ['success' => false, 'message' => 'HTML vsebina ni na voljo'];
+    }
+
+    $test_entry = [
+        'id' => 'TEST-' . time(),
+        '1.3' => 'Test',
+        '1.6' => 'Uporabnik',
+        '2' => $test_email,
+        'date_created' => date('Y-m-d H:i:s'),
+    ];
+
+    $processed_html = process_email_placeholders($html_content, $test_entry, $post_id);
+
+    $subject = 'TEST: Potrditev prijave';
+
+    $result = send_html_email($test_email, $subject, $processed_html);
+
+    return [
+        'success' => $result,
+        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+    ];
+}
+
+
+function send_test_cancellation_email($post_id)
+{
+    if (!current_user_can('manage_options')) {
+        return ['success' => false, 'message' => 'Nimate dovoljenja'];
+    }
+
+    $current_user = wp_get_current_user();
+    $test_email = $current_user->user_email;
+
+    $template = get_field('email_template_cancellation', $post_id);
+
+    if (!$template) {
+        return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
+    }
+
+    $html_content = get_email_html($template->ID);
+
+    if (!$html_content) {
+        return ['success' => false, 'message' => 'HTML vsebina ni na voljo'];
+    }
+
+    $test_entry = [
+        'id' => 'TEST-' . time(),
+        '1.3' => 'Test',
+        '1.6' => 'Uporabnik',
+        '2' => $test_email,
+        'date_created' => date('Y-m-d H:i:s'),
+    ];
+
+    $processed_html = process_email_placeholders($html_content, $test_entry, $post_id);
+
+    $subject = 'TEST: Umik prijave';
+
+    $result = send_html_email($test_email, $subject, $processed_html);
+
+    return [
+        'success' => $result,
+        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+    ];
+}
+
+
+function send_test_reminder_email($post_id)
+{
+    if (!current_user_can('manage_options')) {
+        return ['success' => false, 'message' => 'Nimate dovoljenja'];
+    }
+
+    $current_user = wp_get_current_user();
+    $test_email = $current_user->user_email;
+
+    $template = get_field('email_template_reminder', $post_id);
+
+    if (!$template) {
+        return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
+    }
+
+    $html_content = get_email_html($template->ID);
+
+    if (!$html_content) {
+        return ['success' => false, 'message' => 'HTML vsebina ni na voljo'];
+    }
+
+    $test_entry = [
+        'id' => 'TEST-' . time(),
+        '1.3' => 'Test',
+        '1.6' => 'Uporabnik',
+        '2' => $test_email,
+        'date_created' => date('Y-m-d H:i:s'),
+    ];
+
+    $processed_html = process_email_placeholders($html_content, $test_entry, $post_id);
+
+    $subject = 'TEST: Opomnik';
+
+    $result = send_html_email($test_email, $subject, $processed_html);
+
+    return [
+        'success' => $result,
+        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+    ];
+}
+
+
+function send_test_moodle_email($post_id)
+{
+    if (!current_user_can('manage_options')) {
+        return ['success' => false, 'message' => 'Nimate dovoljenja'];
+    }
+
+    $current_user = wp_get_current_user();
+    $test_email = $current_user->user_email;
+
+    $template = get_field('email_template_moodle', $post_id);
+
+    if (!$template) {
+        return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
+    }
+
+    $html_content = get_email_html($template->ID);
+
+    if (!$html_content) {
+        return ['success' => false, 'message' => 'HTML vsebina ni na voljo'];
+    }
+
+    $test_entry = [
+        'id' => 'TEST-' . time(),
+        '1.3' => 'Test',
+        '1.6' => 'Uporabnik',
+        '2' => $test_email,
+        'date_created' => date('Y-m-d H:i:s'),
+    ];
+
+    $processed_html = process_email_placeholders($html_content, $test_entry, $post_id);
+
+    $subject = 'TEST: Vključitev v spletno učilnico';
+
+    $result = send_html_email($test_email, $subject, $processed_html);
+
+    return [
+        'success' => $result,
+        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+    ];
+}
+
+
+function send_test_course_cancellation_email($post_id)
+{
+    if (!current_user_can('manage_options')) {
+        return ['success' => false, 'message' => 'Nimate dovoljenja'];
+    }
+
+    $current_user = wp_get_current_user();
+    $test_email = $current_user->user_email;
+
+    $template = get_field('email_template_course_cancellation', $post_id);
+
+    if (!$template) {
+        return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
+    }
+
+    $html_content = get_email_html($template->ID);
+
+    if (!$html_content) {
+        return ['success' => false, 'message' => 'HTML vsebina ni na voljo'];
+    }
+
+    $test_entry = [
+        'id' => 'TEST-' . time(),
+        '1.3' => 'Test',
+        '1.6' => 'Uporabnik',
+        '2' => $test_email,
+        'date_created' => date('Y-m-d H:i:s'),
+    ];
+
+    $processed_html = process_email_placeholders($html_content, $test_entry, $post_id);
+
+    $subject = 'TEST: Odpoved dogodka';
+
+    $result = send_html_email($test_email, $subject, $processed_html);
+
+    return [
+        'success' => $result,
+        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+    ];
+}
+
+
+function send_test_course_finished_email($post_id)
+{
+    if (!current_user_can('manage_options')) {
+        return ['success' => false, 'message' => 'Nimate dovoljenja'];
+    }
+
+    $current_user = wp_get_current_user();
+    $test_email = $current_user->user_email;
+
+    $template = get_field('email_template_course_finished', $post_id);
+
+    if (!$template) {
+        return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
+    }
+
+    $html_content = get_email_html($template->ID);
+
+    if (!$html_content) {
+        return ['success' => false, 'message' => 'HTML vsebina ni na voljo'];
+    }
+
+    $test_entry = [
+        'id' => 'TEST-' . time(),
+        '1.3' => 'Test',
+        '1.6' => 'Uporabnik',
+        '2' => $test_email,
+        'date_created' => date('Y-m-d H:i:s'),
+    ];
+
+    $processed_html = process_email_placeholders($html_content, $test_entry, $post_id);
+
+    $subject = 'TEST: Končano izobraževanje';
+
+    $result = send_html_email($test_email, $subject, $processed_html);
+
+    return [
+        'success' => $result,
+        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+    ];
+}

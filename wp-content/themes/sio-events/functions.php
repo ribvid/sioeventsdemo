@@ -53,7 +53,7 @@ Application::configure()
 |
 */
 
-collect(['setup', 'filters', 'acf-field-types', 'course-session-functions', 'ticket-generator'])
+collect(['setup', 'filters', 'acf-field-types', 'course-session-functions', 'ticket-generator', 'email-template-generator'])
     ->each(function ($file) {
         if (!locate_template($file = "app/{$file}.php", true, true)) {
             wp_die(
@@ -349,6 +349,31 @@ add_action('init', function () {
             'not_found_in_trash' => 'Ni najdenih potrdil',
             'all_items' => 'Potrdila',
             'items_list' => 'Seznam potrdil',
+        ],
+        'public' => true,
+        'show_in_menu' => 'edit.php?post_type=course_session',
+        'supports' => [
+            'title',
+        ],
+        'has_archive' => false,
+    ]);
+
+    register_post_type('email_template', [
+        'label' => 'E-poštni vzorec',
+        'labels' => [
+            'name' => 'E-poštni vzorci',
+            'singular_name' => 'E-poštni vzorec',
+            'add_new' => 'Dodaj e-poštni vzorec',
+            'add_new_item' => 'Dodaj e-poštni vzorec',
+            'edit_item' => 'Uredi e-poštni vzorec',
+            'new_item' => 'Nov e-poštni vzorec',
+            'view_item' => 'Poglej e-poštni vzorec',
+            'view_items' => 'Poglej e-poštne vzorce',
+            'search_items' => 'Poišči e-poštni vzorec',
+            'not_found' => 'Ni najdenih e-poštnih vzorcev',
+            'not_found_in_trash' => 'Ni najdenih e-poštnih vzorcev',
+            'all_items' => 'E-poštne vzorce',
+            'items_list' => 'Seznam e-poštnih vzorcev',
         ],
         'public' => true,
         'show_in_menu' => 'edit.php?post_type=course_session',

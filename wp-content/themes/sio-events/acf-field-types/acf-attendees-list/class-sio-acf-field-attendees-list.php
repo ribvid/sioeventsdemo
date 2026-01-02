@@ -20,7 +20,7 @@ class sio_acf_field_attendees_list extends \acf_field
     public $show_in_rest = true;
 
     /**
-     * Environment values relating to the theme or plugin.
+     * Environment values relating to theme or plugin.
      *
      * @var array $env Plugin or theme context such as 'url' and 'version'.
      */
@@ -46,7 +46,7 @@ class sio_acf_field_attendees_list extends \acf_field
         $this->label = __('Seznam udeležencev', 'sage');
 
         /**
-         * The category the field appears within in the field type picker.
+         * The category field appears within in the field type picker.
          */
         $this->category = 'basic'; // basic | content | choice | relational | jquery | layout | CUSTOM GROUP NAME
 
@@ -87,8 +87,9 @@ class sio_acf_field_attendees_list extends \acf_field
          */
         $this->l10n = array();
 
+        $relative_path = str_replace(trailingslashit(ABSPATH), '', trailingslashit(__DIR__));
         $this->env = array(
-            'url' => site_url(str_replace(ABSPATH, '', __DIR__)), // URL to the acf-attendees-list directory.
+            'url' => site_url($relative_path), // URL to acf-attendees-list directory.
             'version' => '1.0', // Replace this with your theme or plugin version constant.
         );
 
@@ -107,8 +108,8 @@ class sio_acf_field_attendees_list extends \acf_field
     /**
      * Settings to display when users configure a field of this type.
      *
-     * These settings appear on the ACF “Edit Field Group” admin page when
-     * setting up the field.
+     * These settings appear on the ACF "Edit Field Group" admin page when
+     * setting up a field.
      *
      * @param array $field
      * @return void
@@ -177,6 +178,7 @@ class sio_acf_field_attendees_list extends \acf_field
                     // Check if ACF fields exist for this entry
                     $has_certificate = !!get_field('certificate', $post_id);
                     $ticket_url = esc_url(gform_get_meta($entry['id'], 'generated_pdf_url'));
+
                     ?>
                     <tr>
                         <td><?php echo esc_html($user_id); ?></td>
@@ -226,9 +228,9 @@ class sio_acf_field_attendees_list extends \acf_field
     }
 
     /**
-     * Enqueues CSS and JavaScript needed by HTML in the render_field() method.
+     * Enqueues CSS and JavaScript needed by HTML in render_field() method.
      *
-     * Callback for admin_enqueue_script.
+     * Callback for admin_enqueue_scripts.
      *
      * @return void
      */

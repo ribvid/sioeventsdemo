@@ -20,7 +20,7 @@ class sio_acf_field_button extends \acf_field
     public $show_in_rest = true;
 
     /**
-     * Environment values relating to the theme or plugin.
+     * Environment values relating to theme or plugin.
      *
      * @var array $env Plugin or theme context such as 'url' and 'version'.
      */
@@ -46,7 +46,7 @@ class sio_acf_field_button extends \acf_field
         $this->label = __('Button', 'sage');
 
         /**
-         * The category the field appears within in the field type picker.
+         * The category field appears within in the field type picker.
          */
         $this->category = 'basic'; // basic | content | choice | relational | jquery | layout | CUSTOM GROUP NAME
 
@@ -91,15 +91,16 @@ class sio_acf_field_button extends \acf_field
             'error' => __('Error! Please enter a higher value', 'sage'),
         );
 
+        $theme_uri = get_template_directory_uri();
         $this->env = array(
-            'url' => site_url(str_replace(ABSPATH, '', __DIR__)), // URL to the acf-button directory.
-            'version' => '1.0', // Replace this with your theme or plugin version constant.
+            'url' => $theme_uri . '/acf-field-types/acf-button',
+            'version' => '1.0',
         );
 
         /**
          * Field type preview image.
          *
-         * A preview image for the field type in the picker modal.
+         * A preview image for the field type in the field picker modal.
          */
         $this->preview_image = $this->env['url'] . '/assets/images/field-preview-custom.png';
 
@@ -130,8 +131,8 @@ class sio_acf_field_button extends \acf_field
     /**
      * Settings to display when users configure a field of this type.
      *
-     * These settings appear on the ACF “Edit Field Group” admin page when
-     * setting up the field.
+     * These settings appear on the ACF "Edit Field Group" admin page when
+     * setting up a field.
      *
      * @param array $field
      * @return void
@@ -201,14 +202,14 @@ class sio_acf_field_button extends \acf_field
 
         wp_register_script(
             'sio-button',
-            "{$url}assets/js/field.js",
+            "{$url}/assets/js/field.js",
             array('acf-input'),
             $version
         );
 
         wp_register_style(
             'sio-button',
-            "{$url}assets/css/field.css",
+            "{$url}/assets/css/field.css",
             array('acf-input'),
             $version
         );
