@@ -1085,7 +1085,7 @@
             "label": "Vzorec e-pošte",
             "name": "email_template_registration",
             "aria-label": "",
-            "type": "post_object",
+            "type": "email_template_preview",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1094,20 +1094,10 @@
                 "class": "",
                 "id": ""
             },
-            "post_type": [
-                "email_template"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": "",
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 1,
-            "allow_in_bindings": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
+            "max_columns": 3,
+            "preview_height": 120,
+            "preview_scale": 0.3,
+            "show_email_type": true
         },
         {
             "key": "field_6952b75ccancellation_accordion",
@@ -1132,7 +1122,7 @@
             "label": "Vzorec e-pošte",
             "name": "email_template_cancellation",
             "aria-label": "",
-            "type": "post_object",
+            "type": "email_template_preview",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1141,20 +1131,10 @@
                 "class": "",
                 "id": ""
             },
-            "post_type": [
-                "email_template"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": "",
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 1,
-            "allow_in_bindings": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
+            "max_columns": 3,
+            "preview_height": 60,
+            "preview_scale": 0.2,
+            "show_email_type": true
         },
         {
             "key": "field_6952b75ereminder_accordion",
@@ -1202,7 +1182,7 @@
             "label": "Vzorec e-pošte",
             "name": "email_template_reminder",
             "aria-label": "",
-            "type": "post_object",
+            "type": "email_template_preview",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1211,20 +1191,10 @@
                 "class": "",
                 "id": ""
             },
-            "post_type": [
-                "email_template"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": "",
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 1,
-            "allow_in_bindings": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
+            "max_columns": 3,
+            "preview_height": 60,
+            "preview_scale": 0.2,
+            "show_email_type": true
         },
         {
             "key": "field_6952b761moodle_accordion",
@@ -1249,7 +1219,7 @@
             "label": "Vzorec e-pošte",
             "name": "email_template_moodle",
             "aria-label": "",
-            "type": "post_object",
+            "type": "email_template_preview",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1258,20 +1228,10 @@
                 "class": "",
                 "id": ""
             },
-            "post_type": [
-                "email_template"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": "",
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 1,
-            "allow_in_bindings": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
+            "max_columns": 3,
+            "preview_height": 60,
+            "preview_scale": 0.2,
+            "show_email_type": true
         },
         {
             "key": "field_6952b763course_cancellation_accordion",
@@ -1296,7 +1256,7 @@
             "label": "Vzorec e-pošte",
             "name": "email_template_course_cancellation",
             "aria-label": "",
-            "type": "post_object",
+            "type": "email_template_preview",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1305,20 +1265,10 @@
                 "class": "",
                 "id": ""
             },
-            "post_type": [
-                "email_template"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": "",
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 1,
-            "allow_in_bindings": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
+            "max_columns": 3,
+            "preview_height": 60,
+            "preview_scale": 0.2,
+            "show_email_type": true
         },
         {
             "key": "field_6952b765course_finished_accordion",
@@ -1343,7 +1293,7 @@
             "label": "Vzorec e-pošte",
             "name": "email_template_course_finished",
             "aria-label": "",
-            "type": "post_object",
+            "type": "email_template_preview",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -1352,20 +1302,10 @@
                 "class": "",
                 "id": ""
             },
-            "post_type": [
-                "email_template"
-            ],
-            "post_status": [
-                "publish"
-            ],
-            "taxonomy": "",
-            "return_format": "object",
-            "multiple": 0,
-            "allow_null": 1,
-            "allow_in_bindings": 0,
-            "bidirectional": 0,
-            "ui": 1,
-            "bidirectional_target": []
+            "max_columns": 3,
+            "preview_height": 60,
+            "preview_scale": 0.2,
+            "show_email_type": true
         }
     ],
     "location": [

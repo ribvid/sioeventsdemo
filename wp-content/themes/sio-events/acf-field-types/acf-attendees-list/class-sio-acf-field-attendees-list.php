@@ -87,10 +87,9 @@ class sio_acf_field_attendees_list extends \acf_field
          */
         $this->l10n = array();
 
-        $relative_path = str_replace(trailingslashit(ABSPATH), '', trailingslashit(__DIR__));
         $this->env = array(
-            'url' => site_url($relative_path), // URL to acf-attendees-list directory.
-            'version' => '1.0', // Replace this with your theme or plugin version constant.
+            'url' => get_template_directory_uri() . '/acf-field-types/acf-attendees-list',
+            'version' => '1.0',
         );
 
         /**

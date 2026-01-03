@@ -53,7 +53,7 @@ Application::configure()
 |
 */
 
-collect(['setup', 'filters', 'acf-field-types', 'course-session-functions', 'ticket-generator', 'email-template-generator'])
+collect(['setup', 'filters', 'acf-field-types', 'course-session-functions', 'ticket-generator', 'email-template-generator', 'email-template-admin'])
     ->each(function ($file) {
         if (!locate_template($file = "app/{$file}.php", true, true)) {
             wp_die(
