@@ -55,11 +55,44 @@ class sio_acf_field_email_template_preview extends \acf_field
 
         error_log('Nonce verified successfully');
 
-        $templates = get_posts(array(
+        $field_name = isset($_POST['field_name']) ? sanitize_text_field($_POST['field_name']) : '';
+
+        $field_key_map = [
+            'field_6952b75bregistration_template' => 'registration',
+            'field_6952b75dcancellation_template' => 'registration_cancellation',
+            'field_6952b760reminder_template' => 'x_days_before',
+            'field_6952b762moodle_template' => 'added_to_moodle',
+            'field_6952b764course_cancellation_template' => 'course_cancellation',
+            'field_6952b766course_finished_template' => 'course_finished',
+        ];
+
+        $email_type = '';
+
+        if (strpos($field_name, 'acf[') === 0) {
+            $field_key = str_replace('acf[', '', str_replace(']', '', $field_name));
+            $email_type = $field_key_map[$field_key] ?? '';
+        }
+
+        error_log('Field name: ' . $field_name);
+        error_log('Email type filter: ' . $email_type);
+
+        $args = array(
             'post_type' => 'email_template',
             'posts_per_page' => -1,
             'post_status' => 'publish',
-        ));
+        );
+
+        if ($email_type) {
+            $args['meta_query'] = array(
+                array(
+                    'key' => 'email_type',
+                    'value' => $email_type,
+                    'compare' => '='
+                )
+            );
+        }
+
+        $templates = get_posts($args);
 
         error_log('Found ' . count($templates) . ' published email templates');
 

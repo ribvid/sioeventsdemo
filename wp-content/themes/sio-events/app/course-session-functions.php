@@ -237,7 +237,7 @@ function send_test_cancellation_email($post_id)
     $current_user = wp_get_current_user();
     $test_email = $current_user->user_email;
 
-    $template = get_field('email_template_cancellation', $post_id);
+    $template = get_field('email_template_registration_cancellation', $post_id);
 
     if (!$template) {
         return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
@@ -279,7 +279,7 @@ function send_test_reminder_email($post_id)
     $current_user = wp_get_current_user();
     $test_email = $current_user->user_email;
 
-    $template = get_field('email_template_reminder', $post_id);
+    $template = get_field('email_template_x_days_before', $post_id);
 
     if (!$template) {
         return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];
@@ -321,7 +321,7 @@ function send_test_moodle_email($post_id)
     $current_user = wp_get_current_user();
     $test_email = $current_user->user_email;
 
-    $template = get_field('email_template_moodle', $post_id);
+    $template = get_field('email_template_added_to_moodle', $post_id);
 
     if (!$template) {
         return ['success' => false, 'message' => 'Nobena predloga e-pošte ni izbrana'];

@@ -297,16 +297,7 @@ function get_email_template_by_type($course_session_id, $email_type)
     error_log('Course Session ID: ' . $course_session_id);
     error_log('Email Type: ' . $email_type);
 
-    $field_map = [
-        'registration' => 'email_template_registration',
-        'registration_cancellation' => 'email_template_cancellation',
-        'x_days_before' => 'email_template_reminder',
-        'added_to_moodle' => 'email_template_moodle',
-        'course_cancellation' => 'email_template_course_cancellation',
-        'course_finished' => 'email_template_course_finished',
-    ];
-
-    $field_name = $field_map[$email_type] ?? null;
+    $field_name = 'email_template_' . $email_type;
 
     if (!$field_name) {
         error_log('EARLY EXIT: Unknown email type');

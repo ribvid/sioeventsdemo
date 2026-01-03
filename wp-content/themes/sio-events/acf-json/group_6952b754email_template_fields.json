@@ -1,0 +1,96 @@
+{
+    "key": "group_6952b754email_template_fields",
+    "title": "Vzorec e-pošte",
+    "fields": [
+        {
+            "key": "field_6952b756template_file",
+            "label": "Naloži vzorčno datoteko",
+            "name": "template",
+            "aria-label": "",
+            "type": "file",
+            "instructions": "Vzorčna datoteka naj bo v formatu docx",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "library": "all",
+            "min_size": "",
+            "max_size": "",
+            "mime_types": "docx",
+            "allow_in_bindings": 0
+        },
+        {
+            "key": "field_6952b757email_type",
+            "label": "Vrsta e-pošte",
+            "name": "email_type",
+            "aria-label": "",
+            "type": "select",
+            "instructions": "Izberite vrsto e-pošte za ta vzorec",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "registration": "Ob prijavi",
+                "registration_cancellation": "Ob umiku prijave",
+                "x_days_before": "X dni pred dogodkom",
+                "added_to_moodle": "Ob vključitvi v spletno učilnico",
+                "course_cancellation": "Ob odpovedi dogodka",
+                "course_finished": "Ob končanem izobraževanju"
+            },
+            "default_value": "registration",
+            "return_format": "value",
+            "multiple": 0,
+            "allow_null": 0,
+            "allow_in_bindings": 0,
+            "ui": 0,
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_6952b758placeholders_info",
+            "label": "Placeholderji",
+            "name": "",
+            "aria-label": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Vzorčna datoteka lahko vsebuje placeholderje, kot so:\r\n\r\n${ime_dogodka}\r\n${datum_izvedbe}\r\n${kraj}\r\n${institucija}\r\n${ime_udeleženca}\r\n${priimek_udeleženca}\r\n${email_udelezenca}\r\n${id_prijave}\r\n${datum_prijave}\r\n\r\nVsaka izvedba ima lahko tudi dodatne placeholderje, ki jih lahko uporabite v vzorčni datoteki.",
+            "new_lines": "wpautop",
+            "esc_html": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "email_template"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "seamless",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "display_title": "",
+    "modified": 1766707504
+}

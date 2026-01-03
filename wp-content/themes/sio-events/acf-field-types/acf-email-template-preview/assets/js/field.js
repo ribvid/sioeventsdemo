@@ -53,7 +53,8 @@
             type: 'POST',
             data: {
                 action: settings.action,
-                nonce: settings.nonce
+                nonce: settings.nonce,
+                field_name: $wrapper.data('field-name') || ''
             },
             success: function (response) {
                 console.log('[Email Template Preview] AJAX Response:', response);

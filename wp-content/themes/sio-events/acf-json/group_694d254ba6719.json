@@ -1120,7 +1120,7 @@
         {
             "key": "field_6952b75dcancellation_template",
             "label": "Vzorec e-pošte",
-            "name": "email_template_cancellation",
+            "name": "email_template_registration_cancellation",
             "aria-label": "",
             "type": "email_template_preview",
             "instructions": "",
@@ -1180,7 +1180,7 @@
         {
             "key": "field_6952b760reminder_template",
             "label": "Vzorec e-pošte",
-            "name": "email_template_reminder",
+            "name": "email_template_x_days_before",
             "aria-label": "",
             "type": "email_template_preview",
             "instructions": "",
@@ -1217,7 +1217,7 @@
         {
             "key": "field_6952b762moodle_template",
             "label": "Vzorec e-pošte",
-            "name": "email_template_moodle",
+            "name": "email_template_added_to_moodle",
             "aria-label": "",
             "type": "email_template_preview",
             "instructions": "",
