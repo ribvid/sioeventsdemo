@@ -222,8 +222,10 @@ function send_test_registration_email($post_id)
     $result = send_html_email($test_email, $subject, $processed_html);
 
     return [
-        'success' => $result,
-        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+        'success' => $result['success'],
+        'message' => $result['success']
+            ? 'Testno sporočilo je bilo poslano na ' . $test_email
+            : 'Napaka pri pošiljanju: ' . ($result['error'] ?? 'Unknown error')
     ];
 }
 
@@ -264,8 +266,10 @@ function send_test_cancellation_email($post_id)
     $result = send_html_email($test_email, $subject, $processed_html);
 
     return [
-        'success' => $result,
-        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+        'success' => $result['success'],
+        'message' => $result['success']
+            ? 'Testno sporočilo je bilo poslano na ' . $test_email
+            : 'Napaka pri pošiljanju: ' . ($result['error'] ?? 'Unknown error')
     ];
 }
 
@@ -306,8 +310,10 @@ function send_test_reminder_email($post_id)
     $result = send_html_email($test_email, $subject, $processed_html);
 
     return [
-        'success' => $result,
-        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+        'success' => $result['success'],
+        'message' => $result['success']
+            ? 'Testno sporočilo je bilo poslano na ' . $test_email
+            : 'Napaka pri pošiljanju: ' . ($result['error'] ?? 'Unknown error')
     ];
 }
 
@@ -348,8 +354,10 @@ function send_test_moodle_email($post_id)
     $result = send_html_email($test_email, $subject, $processed_html);
 
     return [
-        'success' => $result,
-        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+        'success' => $result['success'],
+        'message' => $result['success']
+            ? 'Testno sporočilo je bilo poslano na ' . $test_email
+            : 'Napaka pri pošiljanju: ' . ($result['error'] ?? 'Unknown error')
     ];
 }
 
@@ -390,8 +398,10 @@ function send_test_course_cancellation_email($post_id)
     $result = send_html_email($test_email, $subject, $processed_html);
 
     return [
-        'success' => $result,
-        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+        'success' => $result['success'],
+        'message' => $result['success']
+            ? 'Testno sporočilo je bilo poslano na ' . $test_email
+            : 'Napaka pri pošiljanju: ' . ($result['error'] ?? 'Unknown error')
     ];
 }
 
@@ -432,7 +442,9 @@ function send_test_course_finished_email($post_id)
     $result = send_html_email($test_email, $subject, $processed_html);
 
     return [
-        'success' => $result,
-        'message' => $result ? 'Testno sporočilo je bilo poslano na ' . $test_email : 'Napaka pri pošiljanju'
+        'success' => $result['success'],
+        'message' => $result['success']
+            ? 'Testno sporočilo je bilo poslano na ' . $test_email
+            : 'Napaka pri pošiljanju: ' . ($result['error'] ?? 'Unknown error')
     ];
 }

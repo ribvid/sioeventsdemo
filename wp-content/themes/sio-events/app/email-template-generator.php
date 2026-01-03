@@ -92,6 +92,10 @@ function generate_html_from_word_template($post_id, $post, $update)
         update_post_meta($post_id, '_email_html_url', $html_url);
         update_post_meta($post_id, '_email_html_timestamp', $timestamp);
 
+        // Clear any previous error state
+        delete_post_meta($post_id, '_email_html_generation_failed');
+        delete_post_meta($post_id, '_email_html_generation_error');
+
         error_log('Metadata saved:');
         error_log('  - _email_html_path: ' . $html_path);
         error_log('  - _email_html_url: ' . $html_url);
@@ -104,6 +108,13 @@ function generate_html_from_word_template($post_id, $post, $update)
         error_log('=== EMAIL TEMPLATE GENERATION FAILED ===');
         error_log('Exception: ' . $e->getMessage());
         error_log('Trace: ' . $e->getTraceAsString());
+
+        // Store failure state for user notification
+        update_post_meta($post_id, '_email_html_generation_failed', true);
+        update_post_meta($post_id, '_email_html_generation_error', $e->getMessage());
+
+        // Store the post ID in a transient for the admin notice
+        set_transient('email_template_generation_error_' . $post_id, $e->getMessage(), 300);
     }
 }
 
@@ -130,6 +141,8 @@ function generate_email_template_thumbnail($post_id, $upload_dir)
         if ($thumbnail_created) {
             update_post_meta($post_id, '_email_thumbnail_path', $thumb_filename);
             update_post_meta($post_id, '_email_thumbnail_url', $thumb_url);
+            delete_post_meta($post_id, '_email_thumbnail_failed');
+            delete_post_meta($post_id, '_email_thumbnail_error');
             error_log('Thumbnail created: ' . $thumb_path);
             error_log('Thumbnail URL: ' . $thumb_url);
             error_log('Thumbnail filename stored: ' . $thumb_filename);
@@ -137,6 +150,8 @@ function generate_email_template_thumbnail($post_id, $upload_dir)
         } else {
             error_log('FAILED: Thumbnail file not created');
             update_post_meta($post_id, '_email_thumbnail_failed', true);
+            update_post_meta($post_id, '_email_thumbnail_error', 'Thumbnail generation failed (GD library issue or insufficient resources)');
+            set_transient('email_thumbnail_warning_' . $post_id, 'Thumbnail generation failed. Template saved but preview thumbnail could not be generated.', 300);
         }
 
     } catch (Exception $e) {
@@ -144,6 +159,8 @@ function generate_email_template_thumbnail($post_id, $upload_dir)
         error_log('Exception: ' . $e->getMessage());
         error_log('Trace: ' . $e->getTraceAsString());
         update_post_meta($post_id, '_email_thumbnail_failed', true);
+        update_post_meta($post_id, '_email_thumbnail_error', $e->getMessage());
+        set_transient('email_thumbnail_warning_' . $post_id, 'Thumbnail generation failed: ' . $e->getMessage(), 300);
     }
 }
 
@@ -297,13 +314,22 @@ function get_email_template_by_type($course_session_id, $email_type)
     error_log('Course Session ID: ' . $course_session_id);
     error_log('Email Type: ' . $email_type);
 
-    $field_name = 'email_template_' . $email_type;
+    // Validate email type against whitelist
+    $valid_types = [
+        'registration',
+        'registration_cancellation',
+        'x_days_before',
+        'added_to_moodle',
+        'course_cancellation',
+        'course_finished'
+    ];
 
-    if (!$field_name) {
-        error_log('EARLY EXIT: Unknown email type');
+    if (empty($email_type) || !in_array($email_type, $valid_types, true)) {
+        error_log('EARLY EXIT: Invalid email type: ' . $email_type);
         return null;
     }
 
+    $field_name = 'email_template_' . $email_type;
     $template = get_field($field_name, $course_session_id);
 
     if (!$template) {
@@ -324,20 +350,69 @@ function send_html_email($to, $subject, $html_content, $attachments = [])
     error_log('To: ' . $to);
     error_log('Subject: ' . $subject);
 
+    // Validate email address
+    if (!is_email($to)) {
+        error_log('Invalid email address: ' . $to);
+        return ['success' => false, 'error' => 'Invalid email address: ' . $to];
+    }
+
     $headers = [
         'Content-Type: text/html; charset=UTF-8',
         'From: ' . get_option('blogname') . ' <' . get_option('admin_email') . '>',
     ];
 
+    // Capture wp_mail errors
+    $mail_error = '';
+    $error_handler = function ($wp_error) use (&$mail_error) {
+        $mail_error = $wp_error->get_error_message();
+    };
+    add_action('wp_mail_failed', $error_handler);
+
     $result = wp_mail($to, $subject, $html_content, $headers, $attachments);
+
+    remove_action('wp_mail_failed', $error_handler);
 
     if ($result) {
         error_log('Email sent successfully');
+        error_log('=== SEND HTML EMAIL END ===');
+        return ['success' => true];
     } else {
-        error_log('Email sending failed');
+        $error_msg = $mail_error ?: 'Unknown email sending error';
+        error_log('Email sending failed: ' . $error_msg);
+        error_log('=== SEND HTML EMAIL END ===');
+        return ['success' => false, 'error' => $error_msg];
+    }
+}
+
+
+// Display admin notices for email template generation errors
+add_action('admin_notices', 'display_email_template_generation_notices');
+
+function display_email_template_generation_notices()
+{
+    global $post;
+
+    if (!$post || $post->post_type !== 'email_template') {
+        return;
     }
 
-    error_log('=== SEND HTML EMAIL END ===');
+    // Check for HTML generation error
+    $error_message = get_transient('email_template_generation_error_' . $post->ID);
+    if ($error_message) {
+        echo '<div class="notice notice-error is-dismissible">';
+        echo '<p><strong>Email Template Generation Failed:</strong> ' . esc_html($error_message) . '</p>';
+        echo '<p>The template was saved but the HTML file could not be generated. Please check the error log or contact support.</p>';
+        echo '</div>';
+        delete_transient('email_template_generation_error_' . $post->ID);
+    }
 
-    return $result;
+    // Check for thumbnail generation warning
+    $warning_message = get_transient('email_thumbnail_warning_' . $post->ID);
+    if ($warning_message) {
+        echo '<div class="notice notice-warning is-dismissible">';
+        echo '<p><strong>Thumbnail Generation Warning:</strong> ' . esc_html($warning_message) . '</p>';
+        echo '<p>Check error logs or verify GD library installation.</p>';
+        echo '</div>';
+        delete_transient('email_thumbnail_warning_' . $post->ID);
+    }
 }
