@@ -102,8 +102,10 @@ class sio_acf_field_email_template_preview extends \acf_field
             $thumbnail_url = get_post_meta($template->ID, '_email_thumbnail_url', true);
             $html_url = get_post_meta($template->ID, '_email_html_url', true);
             $email_type = get_field('email_type', $template->ID);
+            $html_editor_mode = get_field('html_editor_mode', $template->ID);
+            $custom_html = get_field('custom_html', $template->ID);
 
-            error_log('Template ID ' . $template->ID . ': thumbnail=' . ($thumbnail_url ? 'YES' : 'NO') . ', email_type=' . $email_type);
+            error_log('Template ID ' . $template->ID . ': thumbnail=' . ($thumbnail_url ? 'YES' : 'NO') . ', email_type=' . $email_type . ', editor_mode=' . $html_editor_mode);
 
             if (!$thumbnail_url) {
                 $upload_dir = wp_upload_dir();
@@ -116,6 +118,8 @@ class sio_acf_field_email_template_preview extends \acf_field
                 'email_type' => $email_type,
                 'thumbnail' => $thumbnail_url,
                 'html_url' => $html_url,
+                'html_editor_mode' => $html_editor_mode ?: 'word',
+                'custom_html' => $custom_html ?: '',
             );
         }
 

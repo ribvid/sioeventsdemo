@@ -46,6 +46,7 @@ function sio_email_template_display_thumbnail_column($column, $post_id)
         return;
     }
 
+    $html_editor_mode = get_field('html_editor_mode', $post_id);
     $html_url = get_post_meta($post_id, '_email_html_url', true);
     $post_status = get_post_status($post_id);
 
@@ -57,24 +58,18 @@ function sio_email_template_display_thumbnail_column($column, $post_id)
         return;
     }
 
-    if ($html_url) {
-        $scale = 0.2;
+    $scale = 0.2;
+    $iframe_style = 'width: 1000px; height: 1414px; position: absolute; top: 0; left: 0; border: none; transform: scale(' . $scale . '); transform-origin: top left; pointer-events: none;';
 
-        printf(
-            '<div style="width: 60px; height: 60px; overflow: hidden; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative;">
-                <iframe 
-                    src="%s" 
-                    style="width: 1000px; height: 1414px; position: absolute; top: 0; left: 0; border: none; transform: scale(%s); transform-origin: top left; pointer-events: none;" 
-                    loading="lazy">
-                </iframe>
-            </div>',
-            esc_url($html_url),
-            $scale
-        );
-        return;
-    }
-
-    echo '<span style="color: #dc3545; font-size: 12px;">' . esc_html__('Ni predogleda', 'sage') . '</span>';
+    printf(
+        '<div style="width: 60px; height: 60px; overflow: hidden; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: relative;">
+            <iframe style="%s" loading="lazy" %s></iframe>
+        </div>',
+        $iframe_style,
+        $html_editor_mode === 'custom' 
+            ? 'srcdoc="' . esc_attr(get_field('custom_html', $post_id)) . '"' 
+            : 'src="' . esc_url($html_url) . '"'
+    );
 }
 add_action('manage_email_template_posts_custom_column', 'sio_email_template_display_thumbnail_column', 10, 2);
 
@@ -143,6 +138,7 @@ add_action('add_meta_boxes', 'sio_email_template_add_thumbnail_metabox');
  */
 function sio_email_template_render_thumbnail_metabox($post)
 {
+    $html_editor_mode = get_field('html_editor_mode', $post->ID);
     $html_url = get_post_meta($post->ID, '_email_html_url', true);
     $post_status = get_post_status($post->ID);
 
@@ -156,25 +152,40 @@ function sio_email_template_render_thumbnail_metabox($post)
         return;
     }
 
-    if ($html_url) {
-        echo '<div class="email-template-thumbnail-wrapper">';
+    $scale = 0.2;
+    $iframe_style = 'width: 1000px; height: 1414px; position: absolute; top: 0; left: 0; border: none; transform: scale(' . $scale . '); transform-origin: top left; pointer-events: none;';
 
-        $scale = 0.2;
+    echo '<div class="email-template-thumbnail-wrapper">';
+    echo '<div style="margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: 60px; position: relative;">';
+    printf(
+        '<iframe style="%s" loading="lazy" %s></iframe>',
+        $iframe_style,
+        $html_editor_mode === 'custom' 
+            ? 'srcdoc="' . esc_attr(get_field('custom_html', $post->ID)) . '"' 
+            : 'src="' . esc_url($html_url) . '"'
+    );
+    echo '</div>';
 
-        echo '<div style="margin-bottom: 12px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: 60px; position: relative;">';
-        printf(
-            '<iframe 
-                src="%s" 
-                style="width: 1000px; height: 1414px; position: absolute; top: 0; left: 0; border: none; transform: scale(%s); transform-origin: top left; pointer-events: none;" 
-                loading="lazy">
-            </iframe>',
-            esc_url($html_url),
-            $scale
-        );
-        echo '</div>';
+    echo '<div style="display: flex; flex-direction: column; gap: 8px;">';
 
-        echo '<div style="display: flex; flex-direction: column; gap: 8px;">';
-
+    if ($html_editor_mode === 'custom') {
+        echo '<button type="button" class="button button-secondary" id="email-template-full-preview" style="text-align: center;">';
+        echo '<span class="dashicons dashicons-visibility" style="font-size: 16px; vertical-align: middle; margin-right: 5px;"></span>';
+        echo esc_html__('Ogled v polni velikosti', 'sage');
+        echo '</button>';
+        echo '<script type="text/javascript">';
+        echo '(function($) {';
+        echo '  $(document).ready(function() {';
+        echo '    $("#email-template-full-preview").on("click", function() {';
+        echo '      var html = ' . json_encode(get_field('custom_html', $post->ID)) . ';';
+        echo '      var win = window.open("", "_blank");';
+        echo '      win.document.write(html);';
+        echo '      win.document.close();';
+        echo '    });';
+        echo '  });';
+        echo '})(jQuery);';
+        echo '</script>';
+    } else {
         printf(
             '<a href="%s" target="_blank" class="button button-secondary" style="text-align: center;">
                 <span class="dashicons dashicons-visibility" style="font-size: 16px; vertical-align: middle; margin-right: 5px;"></span>
@@ -183,19 +194,9 @@ function sio_email_template_render_thumbnail_metabox($post)
             esc_url($html_url),
             esc_html__('Ogled v polni velikosti', 'sage')
         );
-
-        echo '</div>';
-        echo '</div>';
-        return;
     }
 
-    echo '<div style="padding: 15px; text-align: center; background: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107;">';
-    echo '<p style="margin: 0; color: #856404; font-size: 13px;">';
-    echo '<span class="dashicons dashicons-clock" style="font-size: 20px; vertical-align: middle; margin-right: 5px;"></span>';
-    echo esc_html__('Predogled se ustvarja...', 'sage');
-    echo '<br><br>';
-    echo '<em>' . esc_html__('Osvežite stran čez nekaj sekund.', 'sage') . '</em>';
-    echo '</p>';
+    echo '</div>';
     echo '</div>';
 }
 

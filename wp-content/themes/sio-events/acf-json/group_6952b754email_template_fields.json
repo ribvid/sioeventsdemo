@@ -71,6 +71,57 @@
             "message": "Vzorčna datoteka lahko vsebuje placeholderje, kot so:\r\n\r\n${ime_dogodka}\r\n${datum_izvedbe}\r\n${kraj}\r\n${institucija}\r\n${ime_udeleženca}\r\n${priimek_udeleženca}\r\n${email_udelezenca}\r\n${id_prijave}\r\n${datum_prijave}\r\n\r\nVsaka izvedba ima lahko tudi dodatne placeholderje, ki jih lahko uporabite v vzorčni datoteki.",
             "new_lines": "wpautop",
             "esc_html": 0
+        },
+        {
+            "key": "field_6952b759html_editor_mode",
+            "label": "Vir HTML kode",
+            "name": "html_editor_mode",
+            "type": "radio",
+            "instructions": "Izberite vir HTML kode za ta e-poštni vzorec",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "word": "Generirano iz Word datoteke",
+                "custom": "Ročno urejeno"
+            },
+            "default_value": "word",
+            "layout": "vertical",
+            "return_format": "value",
+            "allow_null": 0,
+            "other_choice": 0,
+            "save_other_choice": 0,
+            "allow_in_bindings": 0
+        },
+        {
+            "key": "field_6952b760custom_html",
+            "label": "Urejanje HTML kode",
+            "name": "custom_html",
+            "type": "textarea",
+            "instructions": "Urejte HTML kodo za e-poštni vzorec",
+            "required": 0,
+            "conditional_logic": {
+                "0": {
+                    "field": "field_6952b759html_editor_mode",
+                    "operator": "==",
+                    "value": "custom"
+                }
+            },
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "HTML koda se bo naložila iz generirane datoteke",
+            "maxlength": "",
+            "rows": 20,
+            "new_lines": "",
+            "allow_in_bindings": 0
         }
     ],
     "location": [

@@ -214,17 +214,11 @@ function get_email_html($template_id, $placeholders = [])
     error_log('=== GET EMAIL HTML START ===');
     error_log('Template ID: ' . $template_id);
 
-    $html_path = get_post_meta($template_id, '_email_html_path', true);
-
-    if (!$html_path || !file_exists($html_path)) {
-        error_log('EARLY EXIT: HTML file not found: ' . $html_path);
-        return false;
-    }
-
-    $html_content = file_get_contents($html_path);
+    $html_content = get_email_template_html($template_id);
 
     if ($html_content === false) {
-        error_log('EARLY EXIT: Could not read HTML file');
+        error_log('EARLY EXIT: HTML content could not be retrieved');
+        error_log('=== GET EMAIL HTML FAILED ===');
         return false;
     }
 
@@ -308,6 +302,47 @@ function process_email_placeholders($html, $entry, $course_session_id)
 }
 
 
+function get_email_template_html($template_id)
+{
+    error_log('=== GET EMAIL TEMPLATE HTML START ===');
+    error_log('Template ID: ' . $template_id);
+
+    $html_editor_mode = get_field('html_editor_mode', $template_id);
+    error_log('HTML Editor Mode: ' . $html_editor_mode);
+
+    if ($html_editor_mode === 'custom') {
+        $custom_html = get_field('custom_html', $template_id);
+        if (!empty($custom_html)) {
+            error_log('Using custom HTML from field');
+            error_log('=== GET EMAIL TEMPLATE HTML SUCCESSFUL ===');
+            return $custom_html;
+        }
+    }
+
+    $html_path = get_post_meta($template_id, '_email_html_path', true);
+    error_log('HTML path: ' . $html_path);
+
+    if (!$html_path || !file_exists($html_path)) {
+        error_log('EARLY EXIT: HTML file not found');
+        error_log('=== GET EMAIL TEMPLATE HTML FAILED ===');
+        return false;
+    }
+
+    $html_content = file_get_contents($html_path);
+
+    if ($html_content === false) {
+        error_log('EARLY EXIT: Could not read HTML file');
+        error_log('=== GET EMAIL TEMPLATE HTML FAILED ===');
+        return false;
+    }
+
+    error_log('Using generated HTML from file');
+    error_log('=== GET EMAIL TEMPLATE HTML SUCCESSFUL ===');
+
+    return $html_content;
+}
+
+
 function get_email_template_by_type($course_session_id, $email_type)
 {
     error_log('=== GET EMAIL TEMPLATE BY TYPE START ===');
@@ -341,6 +376,49 @@ function get_email_template_by_type($course_session_id, $email_type)
     error_log('=== GET EMAIL TEMPLATE BY TYPE SUCCESSFUL ===');
 
     return $template;
+}
+
+
+add_filter('acf/load_value/key=field_6952b760custom_html', 'load_generated_html_into_custom_editor', 10, 3);
+
+function load_generated_html_into_custom_editor($value, $post_id, $field)
+{
+    $post = get_post($post_id);
+    if (!$post || $post->post_type !== 'email_template') {
+        return $value;
+    }
+
+    if ($value !== '') {
+        return $value;
+    }
+
+    $html_path = get_post_meta($post_id, '_email_html_path', true);
+    if ($html_path && file_exists($html_path)) {
+        $value = file_get_contents($html_path);
+    }
+
+    return $value;
+}
+
+
+add_action('acf/save_post', 'discard_custom_html_on_word_mode', 20);
+
+function discard_custom_html_on_word_mode($post_id)
+{
+    $post = get_post($post_id);
+    if (!$post || $post->post_type !== 'email_template') {
+        return;
+    }
+
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    $html_editor_mode = get_field('html_editor_mode', $post_id);
+
+    if ($html_editor_mode === 'word') {
+        delete_field('custom_html', $post_id);
+    }
 }
 
 
@@ -414,5 +492,25 @@ function display_email_template_generation_notices()
         echo '<p>Check error logs or verify GD library installation.</p>';
         echo '</div>';
         delete_transient('email_thumbnail_warning_' . $post->ID);
+    }
+}
+
+
+add_action('admin_notices', 'display_html_editor_mode_notice');
+
+function display_html_editor_mode_notice()
+{
+    global $post;
+
+    if (!$post || $post->post_type !== 'email_template') {
+        return;
+    }
+
+    $html_editor_mode = get_field('html_editor_mode', $post->ID);
+
+    if ($html_editor_mode === 'custom') {
+        echo '<div class="notice notice-info is-dismissible">';
+        echo '<p><strong>Način urejanja:</strong> Uporabljate ročno urejeno HTML kodo. Spremembe v Word datoteki ne bodo vplivale na ta vzorec.</p>';
+        echo '</div>';
     }
 }

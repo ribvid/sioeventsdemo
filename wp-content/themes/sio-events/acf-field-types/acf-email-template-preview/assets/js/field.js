@@ -115,12 +115,18 @@
 
         var $thumbnail = $('<div class="acf-email-template-thumbnail">');
 
-        if (template.html_url) {
+        if (template.html_url || template.custom_html) {
             var scale = settings.previewScale || 0.4;
             var height = settings.previewHeight || 80;
 
             var $iframe = $('<iframe class="acf-email-template-iframe">');
-            $iframe.attr('src', template.html_url);
+
+            if (template.html_editor_mode === 'custom' && template.custom_html) {
+                $iframe.attr('srcdoc', template.custom_html);
+            } else if (template.html_url) {
+                $iframe.attr('src', template.html_url);
+            }
+
             $iframe.attr('loading', 'lazy');
             $iframe.css({
                 'width': '1000px',
@@ -157,12 +163,12 @@
 
         var $actions = $('<div class="acf-email-template-actions">');
 
-        if (template.html_url) {
+        if (template.html_url || template.custom_html) {
             var $viewButton = $('<button class="button button-small">');
             $viewButton.text(settings.strings.view_full || 'View full');
             $viewButton.on('click', function (e) {
                 e.stopPropagation();
-                openPreviewModal(template);
+                openPreviewInNewWindow(template);
             });
             $actions.append($viewButton);
         }
@@ -189,56 +195,16 @@
         $valueInput.trigger('change');
     }
 
-    function openPreviewModal(template) {
-        var $modal = $('<div class="acf-email-template-preview-modal">');
-
-        var $overlay = $('<div class="acf-email-template-preview-overlay">');
-        $modal.append($overlay);
-
-        var $content = $('<div class="acf-email-template-preview-content">');
-
-        var $header = $('<div class="acf-email-template-preview-header">');
-
-        var $title = $('<h2>');
-        $title.text(template.title);
-        $header.append($title);
-
-        var $closeButton = $('<button class="button button-close-modal">');
-        $closeButton.text('Close');
-        $closeButton.on('click', function () {
-            $modal.remove();
-        });
-        $header.append($closeButton);
-
-        var $body = $('<div class="acf-email-template-preview-body">');
-
-        if (template.html_url) {
-            var $iframe = $('<iframe class="acf-email-template-preview-iframe">');
-            $iframe.attr('src', template.html_url);
-            $iframe.on('load', function () {
-                $body.find('.acf-email-template-preview-loading').remove();
-            });
-            $body.append($iframe);
-        } else {
-            $body.text('Preview not available');
-        }
-
-        $content.append($header);
-        $content.append($body);
-        $modal.append($content);
-
-        $('body').append($modal);
-
-        $modal.on('click', '.acf-email-template-preview-overlay', function () {
-            $modal.remove();
-        });
-
-        $(document).on('keydown.acfEmailTemplateModal', function (e) {
-            if (e.key === 'Escape') {
-                $modal.remove();
-                $(document).off('keydown.acfEmailTemplateModal');
+    function openPreviewInNewWindow(template) {
+        if (template.html_editor_mode === 'custom' && template.custom_html) {
+            var win = window.open('', '_blank');
+            if (win) {
+                win.document.write(template.custom_html);
+                win.document.close();
             }
-        });
+        } else if (template.html_url) {
+            window.open(template.html_url, '_blank');
+        }
     }
 
     function showError($grid, message) {
